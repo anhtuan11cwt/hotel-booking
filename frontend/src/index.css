@@ -11,3 +11,11 @@
 * {
   font-family: "Inter", sans-serif;
 }
+
+.text-heading {
+  line-height: 1.2;
+}
+
+.text-paragraph {
+  line-height: 1.75;
+}
