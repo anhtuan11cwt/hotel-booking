@@ -22,9 +22,11 @@ export const assets = {
   freezer_icon,
   hero_img,
   location,
+  location_icon,
   logo,
   profile_icon,
   user_icon,
+  users_icon,
 };
 
 export const cities = [
