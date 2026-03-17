@@ -1,5 +1,6 @@
 import { Calendar, LogOut, Menu, X } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { AppContext } from "../context/AppContext";
@@ -28,6 +29,7 @@ const Navbar = () => {
   const handleLogout = () => {
     setUser(null);
     setIsDropdownOpen(false);
+    toast.success("Đăng xuất thành công!");
   };
 
   return (
@@ -40,7 +42,7 @@ const Navbar = () => {
     >
       <Link className="flex items-center gap-2" to="/">
         <img
-          alt="Hotel Booking"
+          alt="Đặt phòng khách sạn"
           className={`h-10 transition-all duration-500 ${
             isScrolled ? "opacity-90" : "brightness-0 invert"
           }`}
@@ -76,7 +78,7 @@ const Navbar = () => {
               type="button"
             >
               <img
-                alt={user.name || "User"}
+                alt={user.name || "Người dùng"}
                 className={`w-9 h-9 rounded-full object-cover border-2 ${
                   isScrolled ? "border-[#FF6347]" : "border-white"
                 }`}
@@ -122,7 +124,7 @@ const Navbar = () => {
         {user && (
           <Link to="/my-bookings">
             <img
-              alt={user.name || "User"}
+              alt={user.name || "Người dùng"}
               className="w-8 h-8 rounded-full object-cover"
               src={assets.profile_icon || assets.user_icon}
             />

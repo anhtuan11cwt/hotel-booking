@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import { Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 
@@ -18,6 +19,31 @@ function App() {
 
   return (
     <div className="min-h-screen">
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#fff",
+            },
+          },
+          style: {
+            background: "#fff",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            color: "#333",
+            padding: "12px 16px",
+          },
+          success: {
+            iconTheme: {
+              primary: "#22c55e",
+              secondary: "#fff",
+            },
+          },
+        }}
+      />
       {!ownerPath && <Navbar />}
 
       <main className={!ownerPath ? "pt-16 md:pt-20" : ""}>
