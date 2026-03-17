@@ -1,7 +1,9 @@
 import Hero from "../components/Hero";
 import HotelSearchForm from "../components/HotelSearchForm";
 import MostPicked from "../components/MostPicked";
+import Newsletter from "../components/Newsletter";
 import PopularRooms from "../components/PopularRooms";
+import Testimonials from "../components/Testimonials";
 
 const Home = () => {
   return (
@@ -10,6 +12,8 @@ const Home = () => {
       <HotelSearchForm />
       <MostPicked />
       <PopularRooms />
+      <Testimonials />
+      <Newsletter />
     </div>
   );
 };
