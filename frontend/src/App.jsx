@@ -1,8 +1,9 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 
+import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
 import About from "./pages/About";
-// Pages
 import Home from "./pages/Home";
 import Hotels from "./pages/Hotels";
 import Login from "./pages/Login";
@@ -16,24 +17,23 @@ function App() {
   const ownerPath = location.pathname.includes("owner");
 
   return (
-    <div>
-      {/* Navbar - Hidden on owner paths */}
-      {!ownerPath && <nav>Navbar</nav>}
+    <div className="min-h-screen">
+      {!ownerPath && <Navbar />}
 
-      {/* Routes */}
-      <Routes>
-        <Route element={<Home />} path="/" />
-        <Route element={<About />} path="/about" />
-        <Route element={<Login />} path="/login" />
-        <Route element={<Signup />} path="/signup" />
-        <Route element={<Rooms />} path="/rooms" />
-        <Route element={<Hotels />} path="/hotels" />
-        <Route element={<SingleRoom />} path="/room/:id" />
-        <Route element={<MyBookings />} path="/my-bookings" />
-      </Routes>
+      <main className={!ownerPath ? "pt-16 md:pt-20" : ""}>
+        <Routes>
+          <Route element={<Home />} path="/" />
+          <Route element={<About />} path="/about" />
+          <Route element={<Login />} path="/login" />
+          <Route element={<Signup />} path="/signup" />
+          <Route element={<Rooms />} path="/rooms" />
+          <Route element={<Hotels />} path="/hotels" />
+          <Route element={<SingleRoom />} path="/room/:id" />
+          <Route element={<MyBookings />} path="/my-bookings" />
+        </Routes>
+      </main>
 
-      {/* Footer - Hidden on owner paths */}
-      {!ownerPath && <footer>Footer</footer>}
+      {!ownerPath && <Footer />}
     </div>
   );
 }
