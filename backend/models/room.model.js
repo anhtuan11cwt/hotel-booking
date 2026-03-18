@@ -23,6 +23,10 @@ const roomSchema = new mongoose.Schema(
       default: true,
       type: Boolean,
     },
+    maxGuests: {
+      default: 4,
+      type: Number,
+    },
     pricePerNight: {
       required: true,
       type: Number,

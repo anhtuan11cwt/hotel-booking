@@ -107,6 +107,7 @@ export const AppContextProvider = ({ children }) => {
           },
           images: room.images || [],
           isAvailable: room.isAvailable,
+          maxGuests: room.maxGuests || 4,
           pricePerNight: room.pricePerNight,
           roomType: room.roomType,
         }));
@@ -136,6 +137,7 @@ export const AppContextProvider = ({ children }) => {
           },
           images: room.images || [],
           isAvailable: room.isAvailable,
+          maxGuests: room.maxGuests || 4,
           pricePerNight: room.pricePerNight,
           roomType: room.roomType,
         }));
@@ -180,6 +182,7 @@ export const AppContextProvider = ({ children }) => {
           },
           images: room.images || [],
           isAvailable: room.isAvailable,
+          maxGuests: room.maxGuests || 4,
           pricePerNight: room.pricePerNight,
           roomType: room.roomType,
         };

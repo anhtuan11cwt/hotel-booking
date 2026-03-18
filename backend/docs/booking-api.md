@@ -217,7 +217,83 @@
 
 ---
 
-## 5. Ghi chú về model `Booking`
+## 5. Xác nhận đặt phòng (chủ sở hữu)
+
+- **Method**: PUT
+- **URL**: `http://localhost:5000/api/bookings/confirm/:id`
+- **Authorization**:
+  - Yêu cầu đăng nhập (cookie JWT `token`)
+- **Mô tả**: Chủ sở hữu khách sạn xác nhận đơn đặt phòng. Trạng thái đơn đặt phòng sẽ chuyển thành `confirmed`.
+- **Headers**: Không
+- **Params**:
+  - `id` (string, bắt buộc): ID của đơn đặt phòng cần xác nhận.
+- **Body**: Không
+
+- **Response**:
+  - 200 (thành công):
+
+```json
+{
+  "booking": {
+    "_id": "...",
+    "status": "confirmed",
+    "updatedAt": "..."
+  },
+  "message": "Xác nhận đặt phòng thành công",
+  "success": true
+}
+```
+
+- 404 (không tìm thấy):
+
+```json
+{
+  "message": "Không tìm thấy đặt phòng",
+  "success": false
+}
+```
+
+---
+
+## 6. Hủy đặt phòng
+
+- **Method**: DELETE
+- **URL**: `http://localhost:5000/api/bookings/cancel/:id`
+- **Authorization**:
+  - Yêu cầu đăng nhập (cookie JWT `token`)
+- **Mô tả**: Hủy đơn đặt phòng. Trạng thái đơn đặt phòng sẽ chuyển thành `cancelled`.
+- **Headers**: Không
+- **Params**:
+  - `id` (string, bắt buộc): ID của đơn đặt phòng cần hủy.
+- **Body**: Không
+
+- **Response**:
+  - 200 (thành công):
+
+```json
+{
+  "booking": {
+    "_id": "...",
+    "status": "cancelled",
+    "updatedAt": "..."
+  },
+  "message": "Hủy đặt phòng thành công",
+  "success": true
+}
+```
+
+- 404 (không tìm thấy):
+
+```json
+{
+  "message": "Không tìm thấy đặt phòng",
+  "success": false
+}
+```
+
+---
+
+## 7. Ghi chú về model `Booking`
 
 - **Nguồn**: `booking.model.js`
 - **Các trường chính**:
@@ -232,6 +308,19 @@
   - `paymentMethod` (String, mặc định `"Pay at hotel"`)
   - `isPaid` (Boolean, mặc định `false`)
   - Có `timestamps`: `createdAt`, `updatedAt`
+
+---
+
+## 8. Tóm tắt Routes
+
+| Method | Endpoint | Mô tả | Authorization |
+|--------|----------|-------|---------------|
+| POST | `/api/bookings/check-availability` | Kiểm tra phòng trống | Public |
+| POST | `/api/bookings/book` | Tạo đơn đặt phòng | Cần login |
+| GET | `/api/bookings/user` | Lấy lịch sử đặt phòng user | Cần login |
+| GET | `/api/bookings/hotel` | Lấy đơn đặt phòng của khách sạn | Cần login |
+| PUT | `/api/bookings/confirm/:id` | Xác nhận đặt phòng | Cần login |
+| DELETE | `/api/bookings/cancel/:id` | Hủy đặt phòng | Cần login |
 
 ---
 

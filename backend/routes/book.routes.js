@@ -1,7 +1,9 @@
 import express from "express";
 import {
   bookRoom,
+  cancelBooking,
   checkRoomAvailability,
+  confirmBooking,
   getHotelBooking,
   getUserBooking,
 } from "../controllers/book.controller.js";
@@ -16,5 +18,9 @@ bookingRouter.post("/book", isAuthenticated, bookRoom);
 bookingRouter.get("/user", isAuthenticated, getUserBooking);
 
 bookingRouter.get("/hotel", isAuthenticated, getHotelBooking);
+
+bookingRouter.put("/confirm/:id", isAuthenticated, confirmBooking);
+
+bookingRouter.delete("/cancel/:id", isAuthenticated, cancelBooking);
 
 export default bookingRouter;

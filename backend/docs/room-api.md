@@ -307,6 +307,7 @@ image: (chọn file .jpg/.png/.webp - có thể chọn tối đa 4 ảnh)
   - `description` (String, bắt buộc): Mô tả phòng
   - `amenities` (Array<String>, mặc định `[]`): Danh sách tiện ích
   - `images` (Array<String>, mặc định `[]`): URL ảnh trên Cloudinary
+  - `maxGuests` (Number, mặc định `4`): Số lượng khách tối đa
   - `isAvailable` (Boolean, mặc định `true`): Trạng thái còn phòng
   - Có `timestamps`: `createdAt`, `updatedAt`
 

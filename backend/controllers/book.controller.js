@@ -133,3 +133,63 @@ export const getHotelBooking = async (req, res) => {
     });
   }
 };
+
+export const confirmBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const booking = await Booking.findByIdAndUpdate(
+      id,
+      { status: "confirmed" },
+      { returnDocument: "after" },
+    );
+
+    if (!booking) {
+      return res.status(404).json({
+        message: "Không tìm thấy đặt phòng",
+        success: false,
+      });
+    }
+
+    res.json({
+      booking,
+      message: "Xác nhận đặt phòng thành công",
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+export const cancelBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const booking = await Booking.findByIdAndUpdate(
+      id,
+      { status: "cancelled" },
+      { returnDocument: "after" },
+    );
+
+    if (!booking) {
+      return res.status(404).json({
+        message: "Không tìm thấy đặt phòng",
+        success: false,
+      });
+    }
+
+    res.json({
+      booking,
+      message: "Hủy đặt phòng thành công",
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
