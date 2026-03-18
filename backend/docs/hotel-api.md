@@ -7,8 +7,8 @@
 
 ## 1. Đăng ký khách sạn (chủ sở hữu)
 
-- **Method**: POST  
-- **URL**: `http://localhost:5000/api/hotel/register`  
+- **Method**: POST
+- **URL**: `http://localhost:5000/api/hotel/register`
 - **Authorization**:
   - Yêu cầu đăng nhập (cookie JWT `token`)
   - Yêu cầu **role**: `owner`
@@ -56,7 +56,7 @@ image: (chọn file .jpg/.png/.webp)
 }
 ```
 
-  - 400 (thiếu trường bắt buộc `hotelName`, `hotelAddress` hoặc `price`):
+- 400 (thiếu trường bắt buộc `hotelName`, `hotelAddress` hoặc `price`):
 
 ```json
 {
@@ -65,7 +65,7 @@ image: (chọn file .jpg/.png/.webp)
 }
 ```
 
-  - 500 (lỗi server):
+- 500 (lỗi server):
 
 ```json
 {
@@ -79,8 +79,8 @@ image: (chọn file .jpg/.png/.webp)
 
 ## 2. Lấy danh sách khách sạn của chủ sở hữu
 
-- **Method**: GET  
-- **URL**: `http://localhost:5000/api/hotel/get`  
+- **Method**: GET
+- **URL**: `http://localhost:5000/api/hotel/get`
 - **Authorization**:
   - Yêu cầu đăng nhập (cookie JWT `token`)
   - Vai trò: người dùng có `role` hợp lệ, thường là `owner`
@@ -114,7 +114,7 @@ image: (chọn file .jpg/.png/.webp)
 }
 ```
 
-  - 500 (lỗi server):
+- 500 (lỗi server):
 
 ```json
 {
@@ -128,8 +128,8 @@ image: (chọn file .jpg/.png/.webp)
 
 ## 3. Lấy toàn bộ khách sạn (public)
 
-- **Method**: GET  
-- **URL**: `http://localhost:5000/api/hotel/getall`  
+- **Method**: GET
+- **URL**: `http://localhost:5000/api/hotel/getall`
 - **Authorization**: Không
 - **Mô tả**: Trả về danh sách toàn bộ khách sạn có trong hệ thống.
 - **Headers**: Không bắt buộc
@@ -160,7 +160,7 @@ image: (chọn file .jpg/.png/.webp)
 }
 ```
 
-  - 500 (lỗi server):
+- 500 (lỗi server):
 
 ```json
 {
@@ -174,8 +174,8 @@ image: (chọn file .jpg/.png/.webp)
 
 ## 4. Xóa khách sạn (chủ sở hữu)
 
-- **Method**: DELETE  
-- **URL**: `http://localhost:5000/api/hotel/delete/:id`  
+- **Method**: DELETE
+- **URL**: `http://localhost:5000/api/hotel/delete/:id`
 - **Authorization**:
   - Yêu cầu đăng nhập (cookie JWT `token`)
   - Yêu cầu **role**: `owner`
@@ -196,7 +196,7 @@ image: (chọn file .jpg/.png/.webp)
 }
 ```
 
-  - 404 (không tìm thấy khách sạn):
+- 404 (không tìm thấy khách sạn):
 
 ```json
 {
@@ -205,7 +205,7 @@ image: (chọn file .jpg/.png/.webp)
 }
 ```
 
-  - 500 (lỗi server):
+- 500 (lỗi server):
 
 ```json
 {
@@ -219,7 +219,7 @@ image: (chọn file .jpg/.png/.webp)
 
 ## 5. Ghi chú về model `Hotel`
 
-- **Nguồn**: `hotel.model.js`  
+- **Nguồn**: `hotel.model.js`
 - **Các trường chính**:
   - `hotelName` (String, bắt buộc)
   - `hotelAddress` (String, bắt buộc)
@@ -244,7 +244,7 @@ image: (chọn file .jpg/.png/.webp)
     - Định dạng cho phép: `jpg`, `jpeg`, `png`, `gif`, `webp`
     - `transformation`: giới hạn kích thước `width: 1200`, `height: 800`
 - **Trong route đăng ký khách sạn**:
-  - Sử dụng `upload.single("image")`  
+  - Sử dụng `upload.single("image")`
   - Ảnh được upload lên Cloudinary, đường dẫn được gán vào field `image` của `Hotel`.
 
 ---
@@ -269,4 +269,3 @@ image: (chọn file .jpg/.png/.webp)
 - Với request upload file (`/api/hotel/register`), nhớ chọn:
   - `Body` → `form-data`
   - Trường `image` chọn **Type: File**.
-
