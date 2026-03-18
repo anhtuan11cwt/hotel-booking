@@ -1,5 +1,187 @@
+import { Upload } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
+
 const RegisterHotel = () => {
-  return <div>RegisterHotel</div>;
+  const [data, setData] = useState({
+    amenities: [],
+    hotelAddress: "",
+    hotelName: "",
+    image: null,
+    price: "",
+    rating: "",
+  });
+
+  const [_file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setData((prev) => ({ ...prev, image: selectedFile }));
+      setPreview(URL.createObjectURL(selectedFile));
+    }
+  };
+
+  const handleAmenityChange = (e) => {
+    const value = e.target.value;
+    setData((prev) => ({
+      ...prev,
+      amenities: value.split(",").map((item) => item.trim()),
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("hotelName", data.hotelName);
+    formData.append("hotelAddress", data.hotelAddress);
+    formData.append("rating", data.rating);
+    formData.append("price", data.price);
+    formData.append("amenities", JSON.stringify(data.amenities));
+    if (data.image) {
+      formData.append("image", data.image);
+    }
+
+    console.log("Form Data Submitted:", Object.fromEntries(formData));
+    toast.success("Đăng ký khách sạn thành công! (Xem dữ liệu trong console)");
+  };
+
+  return (
+    <div className="py-10 flex flex-col justify-between bg-white">
+      <form className="md:p-10 p-4 space-y-5 max-w-lg" onSubmit={handleSubmit}>
+        <div>
+          <p className="text-base font-medium">Ảnh khách sạn</p>
+          <div className="flex flex-wrap items-center gap-3 mt-2">
+            <label className="cursor-pointer" htmlFor="hotel-image">
+              <input
+                accept="image/*"
+                hidden
+                id="hotel-image"
+                onChange={handleImageChange}
+                type="file"
+              />
+              {preview ? (
+                <img
+                  alt="Xem trước ảnh khách sạn"
+                  className="w-24 h-24 object-cover rounded-full shadow-lg"
+                  src={preview}
+                />
+              ) : (
+                <img
+                  alt="Khu vực tải ảnh lên"
+                  className="max-w-24 cursor-pointer"
+                  height={100}
+                  src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/e-commerce/uploadArea.png"
+                  width={100}
+                />
+              )}
+            </label>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1 max-w-md">
+          <label className="text-base font-medium" htmlFor="hotel-name">
+            Tên khách sạn
+          </label>
+          <input
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+            id="hotel-name"
+            name="hotelName"
+            onChange={handleChange}
+            placeholder="Nhập tên khách sạn"
+            required
+            type="text"
+            value={data.hotelName}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1 max-w-md">
+          <label className="text-base font-medium" htmlFor="hotel-address">
+            Địa chỉ khách sạn
+          </label>
+          <textarea
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40 resize-none"
+            id="hotel-address"
+            name="hotelAddress"
+            onChange={handleChange}
+            placeholder="Nhập địa chỉ khách sạn"
+            required
+            rows={3}
+            value={data.hotelAddress}
+          />
+        </div>
+
+        <div className="flex items-center gap-5 flex-wrap">
+          <div className="flex-1 flex flex-col gap-1 w-32">
+            <label className="text-base font-medium" htmlFor="rating">
+              Đánh giá (sao)
+            </label>
+            <input
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              id="rating"
+              max="5"
+              min="1"
+              name="rating"
+              onChange={handleChange}
+              placeholder="1-5"
+              required
+              type="number"
+              value={data.rating}
+            />
+          </div>
+          <div className="flex-1 flex flex-col gap-1 w-32">
+            <label className="text-base font-medium" htmlFor="price">
+              Giá mỗi đêm
+            </label>
+            <input
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              id="price"
+              name="price"
+              onChange={handleChange}
+              placeholder="0"
+              required
+              type="number"
+              value={data.price}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1 max-w-md">
+          <label className="text-base font-medium" htmlFor="amenities">
+            Tiện nghi
+          </label>
+          <input
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+            id="amenities"
+            name="amenities"
+            onChange={handleAmenityChange}
+            placeholder="WiFi, Hồ bơi, Bãi đỗ xe, Phòng gym..."
+            type="text"
+            value={data.amenities.join(", ")}
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Ngăn cách các tiện nghi bằng dấu phẩy
+          </p>
+        </div>
+
+        <button
+          className="px-8 py-2.5 bg-[#3d5cfc] hover:bg-[#2f4df0] active:bg-[#2843d6] text-white font-medium rounded flex items-center gap-2 w-fit focus:outline-none focus:ring-2 focus:ring-[#3d5cfc]/40"
+          type="submit"
+        >
+          <Upload aria-hidden="true" className="w-4 h-4" />
+          Đăng ký khách sạn
+        </button>
+      </form>
+    </div>
+  );
 };
 
 export default RegisterHotel;

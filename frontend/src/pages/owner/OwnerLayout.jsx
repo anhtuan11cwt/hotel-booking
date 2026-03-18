@@ -1,4 +1,10 @@
-import { BedDouble, CalendarDays, LayoutDashboard, LogOut } from "lucide-react";
+import {
+  BedDouble,
+  CalendarDays,
+  LayoutDashboard,
+  LogOut,
+  PlusCircle,
+} from "lucide-react";
 import { useContext } from "react";
 import toast from "react-hot-toast";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -17,6 +23,11 @@ const OwnerLayout = () => {
       icon: <LayoutDashboard aria-hidden="true" className={iconClassName} />,
       name: "Tổng quan",
       path: "/owner",
+    },
+    {
+      icon: <PlusCircle aria-hidden="true" className={iconClassName} />,
+      name: "Đăng ký KS",
+      path: "/owner/register-hotel",
     },
     {
       icon: <BedDouble aria-hidden="true" className={iconClassName} />,
