@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import connectDB from "./config/connectDB.js";
+import bookingRoutes from "./routes/book.routes.js";
 import hotelRoutes from "./routes/hotel.routes.js";
 import roomRoutes from "./routes/room.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -29,6 +30,7 @@ app.get("/", (_req, res) => {
 app.use("/api/user", userRoutes);
 app.use("/api/hotel", hotelRoutes);
 app.use("/api/room", roomRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 connectDB();
 
