@@ -2,7 +2,6 @@ import { Upload } from "lucide-react";
 import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { cities } from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
 import { iconMap } from "../../utils/amenityIcons";
 
@@ -145,21 +144,16 @@ const RegisterHotel = () => {
           <label className="text-base font-medium" htmlFor="hotel-address">
             Địa chỉ khách sạn
           </label>
-          <select
-            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40 bg-white"
+          <input
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
             id="hotel-address"
             name="hotelAddress"
             onChange={handleChange}
+            placeholder="Nhập địa chỉ khách sạn"
             required
+            type="text"
             value={data.hotelAddress}
-          >
-            <option value="">Chọn thành phố</option>
-            {cities.map((city) => (
-              <option key={city} value={city}>
-                {city}
-              </option>
-            ))}
-          </select>
+          />
         </div>
 
         <div className="flex items-center gap-5 flex-wrap">

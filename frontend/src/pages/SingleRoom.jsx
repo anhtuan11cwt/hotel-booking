@@ -203,10 +203,14 @@ const SingleRoom = () => {
 
           <div className="flex items-center gap-2 text-gray-600 mb-3">
             <MapPin className="w-5 h-5 shrink-0" />
+            <span>{room.hotel.name}</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-gray-500 text-sm">
             <span>{room.hotel.address}</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-3">
             <Star className="w-5 h-5 text-yellow-500 fill-current" />
             <span className="font-medium text-gray-700">
               {room.hotel.rating}

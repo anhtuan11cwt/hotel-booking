@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar";
 import { AppContext } from "./context/AppContext";
 import About from "./pages/About";
 import Home from "./pages/Home";
+import HotelRooms from "./pages/HotelRooms";
 import Hotels from "./pages/Hotels";
 import Login from "./pages/Login";
 import MyBookings from "./pages/MyBookings";
@@ -74,6 +75,7 @@ function App() {
           <Route element={<Signup />} path="/signup" />
           <Route element={<Rooms />} path="/rooms" />
           <Route element={<Hotels />} path="/hotels" />
+          <Route element={<HotelRooms />} path="/hotel/:id/rooms" />
           <Route element={<SingleRoom />} path="/room/:id" />
           <Route element={<MyBookings />} path="/my-bookings" />
           <Route element={<Loader />} path="/loader/:nextUrl" />
