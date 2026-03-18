@@ -1,24 +1,6 @@
-import cloudinary from "../config/cloudinary.js";
+import Hotel from "../models/hotel.model.js";
 import Room from "../models/room.model.js";
-
-const extractPublicId = (url) => {
-  if (!url) return null;
-  const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.|%2E)/);
-  return match ? match[1] : null;
-};
-
-const deleteCloudinaryImage = async (imageUrl) => {
-  const publicId = extractPublicId(imageUrl);
-  if (publicId) {
-    await cloudinary.uploader.destroy(publicId);
-  }
-};
-
-const deleteCloudinaryImages = async (images) => {
-  for (const imageUrl of images) {
-    await deleteCloudinaryImage(imageUrl);
-  }
-};
+import { deleteCloudinaryImages } from "../utils/cloudinary.js";
 
 export const addRoom = async (req, res) => {
   try {
@@ -39,6 +21,28 @@ export const addRoom = async (req, res) => {
     }
 
     const images = req.files ? req.files.map((file) => file.path) : [];
+
+    const hotelData = await Hotel.findById(hotel);
+    if (!hotelData) {
+      return res.status(404).json({
+        message: "Không tìm thấy khách sạn",
+        success: false,
+      });
+    }
+
+    if (Number(pricePerNight) < 0) {
+      return res.status(400).json({
+        message: "Giá không được âm",
+        success: false,
+      });
+    }
+
+    if (Number(pricePerNight) < hotelData.price) {
+      return res.status(400).json({
+        message: `Giá phòng phải lớn hơn hoặc bằng giá khách sạn (${hotelData.price.toLocaleString("vi-VN")} VNĐ)`,
+        success: false,
+      });
+    }
 
     const newRoom = new Room({
       amenities: amenities ? JSON.parse(amenities) : [],

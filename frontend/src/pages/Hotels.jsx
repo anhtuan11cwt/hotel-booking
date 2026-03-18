@@ -1,10 +1,14 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 
 const Hotels = () => {
-  const { hotelData } = useContext(AppContext);
+  const { fetchAllHotels, hotelData } = useContext(AppContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchAllHotels();
+  }, [fetchAllHotels]);
 
   return (
     <div className="hotels-page py-24 px-4">

@@ -42,7 +42,7 @@ function App() {
       <Toaster
         position="top-right"
         toastOptions={{
-          duration: 3000,
+          duration: 500,
           error: {
             iconTheme: {
               primary: "#ef4444",

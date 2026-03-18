@@ -141,7 +141,7 @@ export const roomsData = [
     amenities: ["Nhìn ra biển", "Ban công", "Minibar", "Dịch vụ phòng"],
     createdAt: "2025-04-10T06:26:04.013Z",
     description:
-      "Trải nghiệm sang trọng tuyệt vời trong Phòng Deluxe của chúng tôi. Phòng rộng rãi này có các tiện nghi cao cấp, tầm nhìn ra biển tuyệt đẹp và nội thất thanh lịch được thiết kế cho du khách khó tính. Hoàn hảo cho các cặp đôi tìm kiếm kỳ nghỉ lãng mạn hoặc những nhà du lịch kinh doanh đánh giá cao sự thoải mái và phong cách.",
+      "Trải nghiệm sang trọng tuyệt vời trong Phòng Cao cấp của chúng tôi. Phòng rộng rãi này có các tiện nghi cao cấp, tầm nhìn ra biển tuyệt đẹp và nội thất thanh lịch được thiết kế cho du khách khó tính. Hoàn hảo cho các cặp đôi tìm kiếm kỳ nghỉ lãng mạn hoặc những nhà du lịch kinh doanh đánh giá cao sự thoải mái và phong cách.",
     hotel: hotelsData[0],
     images: [
       "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop",
@@ -151,7 +151,7 @@ export const roomsData = [
     ],
     isAvailable: true,
     pricePerNight: 450000,
-    roomType: "Phòng Deluxe",
+    roomType: "Phòng Cao cấp",
     updatedAt: "2025-04-10T06:26:04.013Z",
   },
   {
@@ -165,7 +165,7 @@ export const roomsData = [
     ],
     createdAt: "2025-04-10T06:25:22.593Z",
     description:
-      "Trải nghiệm sang trọng tuyệt vời trong Phòng Hành động của chúng tôi. Phòng rộng rãi này có các tiện nghi cao cấp, tầm nhìn ra thành phố tuyệt đẹp và nội thất thanh lịch được thiết kế cho du khách khó tính. Hoàn hảo cho các cặp đôi tìm kiếm kỳ nghỉ lãng mạn hoặc những nhà du lịch kinh doanh đánh giá cao sự thoải mái và phong cách.",
+      "Trải nghiệm sang trọng tuyệt vời trong Phòng Thương gia của chúng tôi. Phòng rộng rãi này có các tiện nghi cao cấp, tầm nhìn ra thành phố tuyệt đẹp và nội thất thanh lịch được thiết kế cho du khách khó tính. Hoàn hảo cho các cặp đôi tìm kiếm kỳ nghỉ lãng mạn hoặc những nhà du lịch kinh doanh đánh giá cao sự thoải mái và phong cách.",
     hotel: hotelsData[1],
     images: [
       "https://images.unsplash.com/photo-1595576508898-0ad5c879a061?w=400&h=300&fit=crop",
@@ -175,7 +175,7 @@ export const roomsData = [
     ],
     isAvailable: true,
     pricePerNight: 350000,
-    roomType: "Phòng Hành động",
+    roomType: "Phòng Thương gia",
     updatedAt: "2025-04-10T06:25:22.593Z",
   },
   {
@@ -213,7 +213,7 @@ export const roomsData = [
     ],
     createdAt: "2025-04-10T06:23:20.252Z",
     description:
-      "Trải nghiệm sang trọng tuyệt vời trong Phòng Đơn cao cấp của chúng tôi. Phòng rộng rãi này có các tiện nghi cao cấp, tầm nhìn ra vườn tuyệt đẹp và nội thất thanh lịch được thiết kế cho du khách khó tính. Hoàn hảo cho các cặp đôi tìm kiếm kỳ nghỉ lãng mạn hoặc những nhà du lịch kinh doanh đánh giá cao sự thoải mái và phong cách.",
+      "Trải nghiệm sang trọng tuyệt vời trong Phòng Thượng hạng của chúng tôi. Phòng rộng rãi này có các tiện nghi cao cấp, tầm nhìn ra vườn tuyệt đẹp và nội thất thanh lịch được thiết kế cho du khách khó tính. Hoàn hảo cho các cặp đôi tìm kiếm kỳ nghỉ lãng mạn hoặc những nhà du lịch kinh doanh đánh giá cao sự thoải mái và phong cách.",
     hotel: hotelsData[3],
     images: [
       "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
@@ -223,7 +223,7 @@ export const roomsData = [
     ],
     isAvailable: true,
     pricePerNight: 220000,
-    roomType: "Phòng Đơn cao cấp",
+    roomType: "Phòng Thượng hạng",
     updatedAt: "2025-04-10T06:23:20.252Z",
   },
   {
@@ -256,7 +256,7 @@ export const roomsData = [
     ],
     createdAt: "2025-04-10T06:21:57.442Z",
     description:
-      "Trải nghiệm sang trọng tuyệt vời trong Phòng Penthouse của chúng tôi. Phòng rộng rãi này có các tiện nghi cao cấp, tầm nhìn toàn cảnh tuyệt đẹp và nội thất thanh lịch được thiết kế cho du khách khó tính. Hoàn hảo cho các cặp đôi tìm kiếm kỳ nghỉ lãng mạn hoặc những nhà du lịch kinh doanh đánh giá cao sự thoải mái và phong cách.",
+      "Trải nghiệm sang trọng tuyệt vời trong Phòng Tầng thượng của chúng tôi. Phòng rộng rãi này có các tiện nghi cao cấp, tầm nhìn toàn cảnh tuyệt đẹp và nội thất thanh lịch được thiết kế cho du khách khó tính. Hoàn hảo cho các cặp đôi tìm kiếm kỳ nghỉ lãng mạn hoặc những nhà du lịch kinh doanh đánh giá cao sự thoải mái và phong cách.",
     hotel: hotelsData[5],
     images: [
       "https://images.unsplash.com/photo-1445991842772-097fea258e7b?w=400&h=300&fit=crop",
@@ -266,7 +266,7 @@ export const roomsData = [
     ],
     isAvailable: true,
     pricePerNight: 650000,
-    roomType: "Phòng Penthouse",
+    roomType: "Phòng Tầng thượng",
     updatedAt: "2025-04-10T06:21:57.442Z",
   },
 ];

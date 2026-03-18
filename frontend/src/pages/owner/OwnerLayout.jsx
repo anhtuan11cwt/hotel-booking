@@ -14,7 +14,7 @@ import { assets } from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
 
 const OwnerLayout = () => {
-  const { setOwner } = useContext(AppContext);
+  const { setOwner, setUser, axios } = useContext(AppContext);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -53,8 +53,14 @@ const OwnerLayout = () => {
     },
   ];
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await axios.get("/api/user/logout");
+    } catch {
+      // Continue with logout even if API fails
+    }
     setOwner(null);
+    setUser(null);
     toast.success("Đăng xuất thành công!");
     navigate("/");
   };

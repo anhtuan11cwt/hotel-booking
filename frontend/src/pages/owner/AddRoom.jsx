@@ -1,7 +1,8 @@
 import { Upload } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { roomsData } from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
 import { iconMap } from "../../utils/amenityIcons";
 
@@ -25,7 +26,16 @@ const AddRoom = () => {
     roomType: "",
   });
 
+  const selectedHotel = useMemo(() => {
+    if (!roomData.hotel) return null;
+    return hotelData.find((h) => (h._id || h.id) === roomData.hotel) || null;
+  }, [roomData.hotel, hotelData]);
+
   const [previews, setPreviews] = useState([null, null, null, null]);
+
+  const uniqueRoomTypes = useMemo(() => {
+    return [...new Set(roomsData.map((room) => room.roomType))];
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,6 +73,13 @@ const AddRoom = () => {
 
     if (!roomData.hotel) {
       toast.error("Vui lòng chọn khách sạn!");
+      return;
+    }
+
+    if (selectedHotel && Number(roomData.pricePerNight) < selectedHotel.price) {
+      toast.error(
+        `Giá phòng phải lớn hơn hoặc bằng giá khách sạn (${selectedHotel.price.toLocaleString("vi-VN")} VNĐ)`,
+      );
       return;
     }
 
@@ -182,16 +199,23 @@ const AddRoom = () => {
           <label className="font-medium text-base" htmlFor="room-type">
             Loại phòng
           </label>
-          <input
-            className="px-3 py-2 md:py-2.5 border border-gray-500/40 rounded outline-none"
+          <select
+            className="bg-white px-3 py-2 md:py-2.5 border border-gray-500/40 rounded outline-none"
             id="room-type"
             name="roomType"
             onChange={handleChange}
-            placeholder="VD: Phòng Deluxe, Phòng Suite, Phòng Đôi..."
             required
-            type="text"
             value={roomData.roomType}
-          />
+          >
+            <option key="placeholder-room" value="">
+              -- Chọn loại phòng --
+            </option>
+            {uniqueRoomTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="flex flex-col gap-1 max-w-md">
@@ -201,6 +225,7 @@ const AddRoom = () => {
           <input
             className="px-3 py-2 md:py-2.5 border border-gray-500/40 rounded outline-none"
             id="price-per-night"
+            min="0"
             name="pricePerNight"
             onChange={handleChange}
             placeholder="VD: 500000"
@@ -208,6 +233,12 @@ const AddRoom = () => {
             type="number"
             value={roomData.pricePerNight}
           />
+          <p className="text-sm text-gray-500 mt-1">
+            Giá khách sạn:{" "}
+            {selectedHotel
+              ? `${selectedHotel.price.toLocaleString("vi-VN")} VNĐ`
+              : "Chọn khách sạn để xem"}
+          </p>
         </div>
 
         <div className="flex flex-col gap-1 max-w-md">

@@ -1,19 +1,6 @@
-import cloudinary from "../config/cloudinary.js";
 import Hotel from "../models/hotel.model.js";
 import Room from "../models/room.model.js";
-
-const extractPublicId = (url) => {
-  if (!url) return null;
-  const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.|%2E)/);
-  return match ? match[1] : null;
-};
-
-const deleteCloudinaryImage = async (imageUrl) => {
-  const publicId = extractPublicId(imageUrl);
-  if (publicId) {
-    await cloudinary.uploader.destroy(publicId);
-  }
-};
+import { deleteCloudinaryImage } from "../utils/cloudinary.js";
 
 export const registerHotel = async (req, res) => {
   try {
@@ -24,6 +11,13 @@ export const registerHotel = async (req, res) => {
     if (!hotelName || !hotelAddress || !price) {
       return res.status(400).json({
         message: "Vui lòng nhập đầy đủ thông tin",
+        success: false,
+      });
+    }
+
+    if (Number(price) < 0) {
+      return res.status(400).json({
+        message: "Giá không được âm",
         success: false,
       });
     }
