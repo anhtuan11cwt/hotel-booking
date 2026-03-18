@@ -99,6 +99,37 @@ export const getAllRooms = async (_req, res) => {
   }
 };
 
+export const getRoomById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const room = await Room.findById(id).populate({
+      path: "hotel",
+      populate: {
+        path: "owner",
+        select: "name email phone",
+      },
+    });
+
+    if (!room) {
+      return res.status(404).json({
+        message: "Không tìm thấy phòng",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      room,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message,
+      message: "Lỗi server",
+      success: false,
+    });
+  }
+};
+
 export const deleteRoom = async (req, res) => {
   try {
     const { id } = req.params;

@@ -189,7 +189,70 @@ image: (chọn file .jpg/.png/.webp - có thể chọn tối đa 4 ảnh)
 
 ---
 
-## 4. Xóa phòng (chủ sở hữu)
+## 4. Lấy thông tin phòng theo ID
+
+- **Method**: GET
+- **URL**: `http://localhost:5000/api/room/:id`
+- **Authorization**: Không
+- **Mô tả**: Lấy chi tiết một phòng theo `id`. Trả về thông tin đầy đủ bao gồm khách sạn chủ sở hữu.
+- **Headers**: Không bắt buộc
+- **Params**:
+  - `id` (string, bắt buộc): ID của phòng cần lấy
+- **Body**: Không
+
+- **Response**:
+  - 200 (thành công):
+
+```json
+{
+  "room": {
+    "_id": "...",
+    "hotel": {
+      "_id": "...",
+      "hotelName": "Khách sạn A",
+      "hotelAddress": "123 Đường ABC, Quận 1",
+      "owner": {
+        "_id": "...",
+        "name": "Owner Name",
+        "email": "owner@example.com",
+        "phone": "0901234567"
+      }
+    },
+    "roomType": "Deluxe",
+    "pricePerNight": 1500000,
+    "description": "Phòng sang trọng với view biển",
+    "amenities": ["wifi", "tv", "minibar", "balcony"],
+    "images": ["https://res.cloudinary.com/..."],
+    "isAvailable": true,
+    "createdAt": "...",
+    "updatedAt": "..."
+  },
+  "success": true
+}
+```
+
+- 404 (không tìm thấy phòng):
+
+```json
+{
+  "message": "Không tìm thấy phòng",
+  "success": false
+}
+```
+
+- 500 (lỗi server):
+
+```json
+{
+  "message": "Lỗi server",
+  "success": false,
+  "error": "..."
+}
+```
+
+---
+
+## 5. Xóa phòng (chủ sở hữu)
 
 - **Method**: DELETE
 - **URL**: `http://localhost:5000/api/room/delete/:id`
@@ -234,7 +297,7 @@ image: (chọn file .jpg/.png/.webp - có thể chọn tối đa 4 ảnh)
 
 ---
 
-## 5. Ghi chú về model `Room`
+## 6. Model `Room`
 
 - **Nguồn**: `room.model.js`
 - **Các trường chính**:
@@ -249,9 +312,21 @@ image: (chọn file .jpg/.png/.webp - có thể chọn tối đa 4 ảnh)
 
 ---
 
-## 6. Ghi chú về upload ảnh (Cloudinary & Multer)
+## 7. Middleware
 
-- **Nguồn cấu hình**:
+- **`isAuthenticated`**: Kiểm tra JWT token trong cookie, nếu không có hoặc không hợp lệ sẽ trả lỗi 401
+  - Được dùng bởi: `/add`, `/owner`, `/delete/:id`
+  - Lấy `user.id` từ token để sử dụng trong logic controller
+
+- **`isOwner`**: Kiểm tra xem user có role `owner` hay không
+  - Được dùng bởi: `/add`, `/delete/:id`
+  - Yêu cầu user phải đăng nhập trước (chạy sau `isAuthenticated`)
+
+---
+
+## 8. Upload ảnh (Cloudinary & Multer)
+
+- **Cấu hình**:
   - `config/cloudinary.js`: Kết nối Cloudinary bằng các biến môi trường:
     - `CLOUDINARY_API_KEY`
     - `CLOUDINARY_API_SECRET`
@@ -260,19 +335,21 @@ image: (chọn file .jpg/.png/.webp - có thể chọn tối đa 4 ảnh)
     - Thư mục lưu: `"hotel-booking"`
     - Định dạng cho phép: `jpg`, `jpeg`, `png`, `gif`, `webp`
     - `transformation`: giới hạn kích thước `width: 1200`, `height: 800`
+
 - **Trong route thêm phòng**:
   - Sử dụng `upload.array("image", 4)` - cho phép upload tối đa 4 ảnh
   - Các ảnh được upload lên Cloudinary, đường dẫn được lưu vào field `images` của `Room` dưới dạng mảng.
 
 ---
 
-## 7. Routes tổng hợp
+## 9. Tóm tắt Routes
 
 | Method | Endpoint | Mô tả | Authorization |
 |--------|----------|-------|---------------|
 | POST | `/api/room/add` | Thêm phòng mới | Cần login, role: owner |
 | GET | `/api/room/owner` | Lấy phòng của chủ sở hữu | Cần login |
 | GET | `/api/room/all` | Lấy tất cả phòng còn trống | Public |
+| GET | `/api/room/:id` | Lấy thông tin phòng theo ID | Public |
 | DELETE | `/api/room/delete/:id` | Xóa phòng | Cần login, role: owner |
 
 ---

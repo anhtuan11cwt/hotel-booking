@@ -8,7 +8,7 @@ import {
   Users,
   XCircle,
 } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
@@ -17,13 +17,30 @@ import { formatCurrencyVND } from "../utils/currency";
 
 const SingleRoom = () => {
   const { id } = useParams();
-  const { roomData } = useContext(AppContext);
+  const { roomData, fetchRoomById } = useContext(AppContext);
   const [selectedImage, setSelectedImage] = useState(0);
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
   const [persons, setPersons] = useState(1);
+  const [room, setRoom] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const room = roomData.find((r) => r._id === id);
+  useEffect(() => {
+    const getRoomData = async () => {
+      const foundRoom = roomData.find((r) => r._id === id);
+      if (foundRoom) {
+        setRoom(foundRoom);
+        setLoading(false);
+        return;
+      }
+      const fetchedRoom = await fetchRoomById(id);
+      if (fetchedRoom) {
+        setRoom(fetchedRoom);
+      }
+      setLoading(false);
+    };
+    getRoomData();
+  }, [id, roomData, fetchRoomById]);
 
   const handleBooking = () => {
     if (!checkInDate || !checkOutDate) {
@@ -32,6 +49,14 @@ const SingleRoom = () => {
     }
     toast.success("Yêu cầu đặt phòng đã được gửi thành công!");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Đang tải...</p>
+      </div>
+    );
+  }
 
   if (!room) {
     return (

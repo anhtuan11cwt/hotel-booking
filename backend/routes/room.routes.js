@@ -5,6 +5,7 @@ import {
   deleteRoom,
   getAllRooms,
   getOwnersRoom,
+  getRoomById,
 } from "../controllers/room.controller.js";
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
 import { isOwner } from "../middleware/isOwner.js";
@@ -20,6 +21,7 @@ router.post(
 );
 router.get("/owner", isAuthenticated, getOwnersRoom);
 router.get("/all", getAllRooms);
+router.get("/:id", getRoomById);
 router.delete("/delete/:id", isAuthenticated, isOwner, deleteRoom);
 
 export default router;

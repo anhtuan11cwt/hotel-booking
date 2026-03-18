@@ -160,6 +160,38 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
+  const fetchRoomById = useCallback(async (roomId) => {
+    try {
+      const { data } = await axios.get(`/api/room/${roomId}`);
+      if (data.success) {
+        const room = data.room;
+        const formattedRoom = {
+          _id: room._id,
+          amenities: room.amenities || [],
+          description: room.description,
+          hotel: {
+            _id: room.hotel?._id,
+            address: room.hotel?.hotelAddress,
+            amenities: room.hotel?.amenities || [],
+            contactNumber: room.hotel?.owner?.phone || "Chưa có",
+            name: room.hotel?.hotelName,
+            ownerName: room.hotel?.owner?.name || "Chưa có",
+            rating: room.hotel?.rating,
+          },
+          images: room.images || [],
+          isAvailable: room.isAvailable,
+          pricePerNight: room.pricePerNight,
+          roomType: room.roomType,
+        };
+        return formattedRoom;
+      }
+      return null;
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin phòng:", error);
+      return null;
+    }
+  }, []);
+
   useEffect(() => {
     const init = async () => {
       await checkUserLoggedIn();
@@ -176,6 +208,7 @@ export const AppContextProvider = ({ children }) => {
     fetchAllRooms,
     fetchOwnerHotels,
     fetchOwnerRooms,
+    fetchRoomById,
     hotelData,
     navigate,
     owner,
