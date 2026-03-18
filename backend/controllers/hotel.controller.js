@@ -1,5 +1,6 @@
 import cloudinary from "../config/cloudinary.js";
 import Hotel from "../models/hotel.model.js";
+import Room from "../models/room.model.js";
 
 const extractPublicId = (url) => {
   if (!url) return null;
@@ -104,6 +105,7 @@ export const deleteHotel = async (req, res) => {
     }
 
     await deleteCloudinaryImage(hotel.image);
+    await Room.deleteMany({ hotel: id });
     await Hotel.findByIdAndDelete(id);
 
     return res.status(200).json({

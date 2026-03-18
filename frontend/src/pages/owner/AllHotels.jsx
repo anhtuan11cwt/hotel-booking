@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
+import { formatCurrencyVND } from "../../utils/currency";
 
 const AllHotels = () => {
   const { hotelData, fetchOwnerHotels, axios } = useContext(AppContext);
@@ -145,7 +146,7 @@ const AllHotels = () => {
                     </td>
                     <td className="px-4 py-4">
                       <span className="font-semibold text-gray-900">
-                        {hotel.price}
+                        {formatCurrencyVND(hotel.price)}
                       </span>
                     </td>
                     <td className="px-4 py-4">

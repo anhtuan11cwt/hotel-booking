@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
+import { iconMap } from "../../utils/amenityIcons";
 
 const AddRoom = () => {
   const { axios, fetchOwnerHotels, hotelData } = useContext(AppContext);
@@ -45,12 +46,16 @@ const AddRoom = () => {
     }
   };
 
-  const handleAmenityChange = (e) => {
-    const value = e.target.value;
-    setRoomData((prev) => ({
-      ...prev,
-      amenities: value.split(","),
-    }));
+  const toggleAmenity = (amenity) => {
+    setRoomData((prev) => {
+      const exists = prev.amenities.includes(amenity);
+      return {
+        ...prev,
+        amenities: exists
+          ? prev.amenities.filter((a) => a !== amenity)
+          : [...prev.amenities, amenity],
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -221,22 +226,32 @@ const AddRoom = () => {
           />
         </div>
 
-        <div className="flex flex-col gap-1 max-w-md">
-          <label className="font-medium text-base" htmlFor="amenities">
-            Tiện nghi
-          </label>
-          <input
-            className="px-3 py-2 md:py-2.5 border border-gray-500/40 rounded outline-none"
-            id="amenities"
-            name="amenities"
-            onChange={handleAmenityChange}
-            placeholder="WiFi, Hồ bơi, Bãi đỗ xe, Phòng gym..."
-            type="text"
-            value={roomData.amenities.join(", ")}
-          />
-          <p className="mt-1 text-gray-500 text-xs">
-            Ngăn cách các tiện nghi bằng dấu phẩy
-          </p>
+        <div className="flex flex-col gap-2 max-w-md">
+          <p className="font-medium text-base">Tiện nghi</p>
+          <div className="flex flex-wrap gap-2">
+            {Object.keys(iconMap).map((amenity) => {
+              const IconComponent = iconMap[amenity];
+              return (
+                <label
+                  className={`flex items-center gap-2 px-3 py-2 rounded cursor-pointer border transition-colors ${
+                    roomData.amenities.includes(amenity)
+                      ? "bg-[#3d5cfc] text-white border-[#3d5cfc]"
+                      : "bg-white text-gray-700 border-gray-300 hover:border-[#3d5cfc]"
+                  }`}
+                  key={amenity}
+                >
+                  <input
+                    checked={roomData.amenities.includes(amenity)}
+                    className="hidden"
+                    onChange={() => toggleAmenity(amenity)}
+                    type="checkbox"
+                  />
+                  <IconComponent className="w-4 h-4" />
+                  <span className="text-sm">{amenity}</span>
+                </label>
+              );
+            })}
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
