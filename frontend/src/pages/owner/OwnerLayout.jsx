@@ -26,8 +26,8 @@ const OwnerLayout = () => {
     },
     {
       icon: <PlusCircle aria-hidden="true" className={iconClassName} />,
-      name: "Đăng ký KS",
-      path: "/owner/register-hotel",
+      name: "Thêm phòng",
+      path: "/owner/add-room",
     },
     {
       icon: <BedDouble aria-hidden="true" className={iconClassName} />,
