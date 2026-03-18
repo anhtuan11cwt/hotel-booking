@@ -1,6 +1,15 @@
+import transporter from "../config/nodemailer.js";
 import Booking from "../models/booking.model.js";
 import Hotel from "../models/hotel.model.js";
 import Room from "../models/room.model.js";
+import User from "../models/user.model.js";
+import buildBookingMailOptions from "../utils/booking_mail_options.js";
+
+const sendBookingEmail = async (user, booking, room, hotel) => {
+  const mailOptions = buildBookingMailOptions(user, booking, room, hotel);
+
+  await transporter.sendMail(mailOptions);
+};
 
 const checkAvailability = async (roomId, checkInDate, checkOutDate) => {
   const bookings = await Booking.find({
@@ -78,6 +87,9 @@ export const bookRoom = async (req, res) => {
       totalPrice,
       user: userId,
     });
+
+    const user = await User.findById(userId);
+    await sendBookingEmail(user, booking, room, room.hotel);
 
     res.status(201).json({
       booking,

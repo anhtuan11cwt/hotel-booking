@@ -55,7 +55,7 @@
 - **URL**: `http://localhost:5000/api/bookings/book`
 - **Authorization**:
   - Yêu cầu đăng nhập (cookie JWT `token`)
-- **Mô tả**: Tạo một đơn đặt phòng mới. Hệ thống sẽ tự động tính toán `totalPrice` dựa trên số đêm và số người.
+- **Mô tả**: Tạo một đơn đặt phòng mới. Hệ thống sẽ tự động tính toán `totalPrice` dựa trên số đêm và số người. Ngoài ra, một email xác nhận sẽ được gửi tới hòm thư của người dùng sau khi hoàn thành.
 - **Headers**:
   - `Content-Type: application/json`
 - **Body** (JSON):
