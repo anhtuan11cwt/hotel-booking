@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { getAmenityIcon } from "../utils/amenityIcons";
+import { formatCurrencyVND } from "../utils/currency";
 
 const SingleRoom = () => {
   const { id } = useParams();
@@ -23,14 +24,6 @@ const SingleRoom = () => {
   const [persons, setPersons] = useState(1);
 
   const room = roomData.find((r) => r._id === id);
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("vi-VN", {
-      currency: "VND",
-      maximumFractionDigits: 0,
-      style: "currency",
-    }).format(price);
-  };
 
   const handleBooking = () => {
     if (!checkInDate || !checkOutDate) {
@@ -85,7 +78,7 @@ const SingleRoom = () => {
 
         <div className="lg:text-right flex flex-col gap-3">
           <div className="text-3xl font-bold text-gray-800">
-            {formatPrice(room.pricePerNight)}
+            {formatCurrencyVND(room.pricePerNight)}
             <span className="text-base font-normal text-gray-500"> / đêm</span>
           </div>
 
@@ -254,7 +247,7 @@ const SingleRoom = () => {
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-gray-600">Giá mỗi đêm</span>
                   <span className="font-semibold text-gray-800">
-                    {formatPrice(room.pricePerNight)}
+                    {formatCurrencyVND(room.pricePerNight)}
                   </span>
                 </div>
               </div>

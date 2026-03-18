@@ -5,6 +5,7 @@ import { useContext } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
+import { formatCurrencyVND } from "../../utils/currency";
 
 const AllRooms = () => {
   const { roomData, setRoomData } = useContext(AppContext);
@@ -13,14 +14,6 @@ const AllRooms = () => {
   const handleDelete = (roomId) => {
     setRoomData(roomData.filter((room) => room._id !== roomId));
     toast.success("Xóa phòng thành công!");
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("vi-VN", {
-      currency: "VND",
-      maximumFractionDigits: 0,
-      style: "currency",
-    }).format(price);
   };
 
   return (
@@ -113,7 +106,7 @@ const AllRooms = () => {
                   </td>
                   <td className="px-4 py-4">
                     <span className="font-semibold text-gray-900">
-                      {formatPrice(room.pricePerNight)}
+                      {formatCurrencyVND(room.pricePerNight)}
                     </span>
                   </td>
                   <td className="px-4 py-4">

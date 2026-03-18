@@ -1,6 +1,8 @@
 import {
   BedDouble,
+  Building,
   CalendarDays,
+  Home,
   LayoutDashboard,
   LogOut,
   PlusCircle,
@@ -23,6 +25,16 @@ const OwnerLayout = () => {
       icon: <LayoutDashboard aria-hidden="true" className={iconClassName} />,
       name: "Tổng quan",
       path: "/owner",
+    },
+    {
+      icon: <Building aria-hidden="true" className={iconClassName} />,
+      name: "Khách sạn",
+      path: "/owner/hotels",
+    },
+    {
+      icon: <Home aria-hidden="true" className={iconClassName} />,
+      name: "Đăng ký KS",
+      path: "/owner/register-hotel",
     },
     {
       icon: <PlusCircle aria-hidden="true" className={iconClassName} />,

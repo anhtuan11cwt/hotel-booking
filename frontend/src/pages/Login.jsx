@@ -30,7 +30,7 @@ const Login = () => {
         toast.success(data.message);
         if (data.user.role === "owner") {
           setOwner(data.user);
-          navigate("/owner/dashboard");
+          navigate("/owner/hotels");
         } else {
           setUser(data.user);
           navigate("/");

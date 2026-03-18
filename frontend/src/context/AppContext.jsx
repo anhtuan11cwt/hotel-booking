@@ -31,6 +31,63 @@ export const AppContextProvider = ({ children }) => {
     }
   }, []);
 
+  const fetchOwnerHotels = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/hotel/get");
+      if (data.success) {
+        const hotels = data.hotels.map((hotel) => ({
+          address: hotel.hotelAddress,
+          amenities: hotel.amenities || [],
+          contactNumber: hotel.owner?.phone || "Chưa có",
+          id: hotel._id,
+          image: hotel.image || "",
+          name: hotel.hotelName,
+          ownerName: hotel.owner?.name || "Chưa có",
+          price: hotel.price,
+          rating: hotel.rating,
+        }));
+        setHotelData(hotels);
+      }
+    } catch (error) {
+      console.error("Error fetching owner hotels:", error);
+    }
+  }, []);
+
+  const fetchAllHotels = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/hotel/getall");
+      if (data.success) {
+        const hotels = data.hotels.map((hotel) => ({
+          address: hotel.hotelAddress,
+          amenities: hotel.amenities || [],
+          id: hotel._id,
+          image: hotel.image || "",
+          name: hotel.hotelName,
+          ownerName: hotel.owner?.name || "Chưa có",
+          price: hotel.price,
+          rating: hotel.rating,
+        }));
+        setHotelData(hotels);
+      }
+    } catch (error) {
+      console.error("Error fetching all hotels:", error);
+    }
+  }, []);
+
+  const deleteHotel = async (hotelId) => {
+    try {
+      const { data } = await axios.delete(`/api/hotel/delete/${hotelId}`);
+      if (data.success) {
+        setHotelData((prev) => prev.filter((hotel) => hotel.id !== hotelId));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error deleting hotel:", error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     const init = async () => {
       await checkUserLoggedIn();
@@ -41,6 +98,9 @@ export const AppContextProvider = ({ children }) => {
   const value = {
     axios,
     checkUserLoggedIn,
+    deleteHotel,
+    fetchAllHotels,
+    fetchOwnerHotels,
     hotelData,
     navigate,
     owner,

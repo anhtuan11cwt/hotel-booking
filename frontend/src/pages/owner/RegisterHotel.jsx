@@ -1,8 +1,12 @@
 import { Upload } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { AppContext } from "../../context/AppContext";
 
 const RegisterHotel = () => {
+  const { axios, fetchOwnerHotels } = useContext(AppContext);
+  const navigate = useNavigate();
   const [data, setData] = useState({
     amenities: [],
     hotelAddress: "",
@@ -14,6 +18,7 @@ const RegisterHotel = () => {
 
   const [_file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,25 +38,52 @@ const RegisterHotel = () => {
     const value = e.target.value;
     setData((prev) => ({
       ...prev,
-      amenities: value.split(",").map((item) => item.trim()),
+      amenities: value.split(","),
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    const formData = new FormData();
-    formData.append("hotelName", data.hotelName);
-    formData.append("hotelAddress", data.hotelAddress);
-    formData.append("rating", data.rating);
-    formData.append("price", data.price);
-    formData.append("amenities", JSON.stringify(data.amenities));
-    if (data.image) {
-      formData.append("image", data.image);
+    try {
+      const formData = new FormData();
+      formData.append("hotelName", data.hotelName);
+      formData.append("hotelAddress", data.hotelAddress);
+      formData.append("rating", data.rating);
+      formData.append("price", data.price);
+      formData.append(
+        "amenities",
+        data.amenities.map((item) => item.trim()).join(","),
+      );
+      if (data.image) {
+        formData.append("image", data.image);
+      }
+
+      const { data: response } = await axios.post(
+        "/api/hotel/register",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      if (response.success) {
+        toast.success(response.message || "Đăng ký khách sạn thành công!");
+        await fetchOwnerHotels();
+        navigate("/owner/hotels");
+      } else {
+        toast.error(response.message || "Đăng ký khách sạn thất bại");
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Đã xảy ra lỗi khi đăng ký khách sạn",
+      );
+    } finally {
+      setIsLoading(false);
     }
-
-    console.log("Form Data Submitted:", Object.fromEntries(formData));
-    toast.success("Đăng ký khách sạn thành công! (Xem dữ liệu trong console)");
   };
 
   return (
@@ -173,10 +205,15 @@ const RegisterHotel = () => {
         </div>
 
         <button
-          className="px-8 py-2.5 bg-[#3d5cfc] hover:bg-[#2f4df0] active:bg-[#2843d6] text-white font-medium rounded flex items-center gap-2 w-fit focus:outline-none focus:ring-2 focus:ring-[#3d5cfc]/40"
+          className="px-8 py-2.5 bg-[#3d5cfc] hover:bg-[#2f4df0] active:bg-[#2843d6] text-white font-medium rounded flex items-center gap-2 w-fit focus:outline-none focus:ring-2 focus:ring-[#3d5cfc]/40 disabled:opacity-70 disabled:cursor-not-allowed"
+          disabled={isLoading}
           type="submit"
         >
-          <Upload aria-hidden="true" className="w-4 h-4" />
+          {isLoading ? (
+            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Upload aria-hidden="true" className="w-4 h-4" />
+          )}
           Đăng ký khách sạn
         </button>
       </form>

@@ -2,6 +2,7 @@
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { getAmenityIcon } from "../utils/amenityIcons";
+import { formatCurrencyVND } from "../utils/currency";
 
 const RoomCard = ({ room }) => {
   const navigate = useNavigate();
@@ -9,14 +10,6 @@ const RoomCard = ({ room }) => {
   const handleSeeDetails = () => {
     navigate(`/room/${room._id}`);
     window.scrollTo({ behavior: "smooth", top: 0 });
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("vi-VN", {
-      currency: "VND",
-      maximumFractionDigits: 0,
-      style: "currency",
-    }).format(price);
   };
 
   return (
@@ -34,7 +27,7 @@ const RoomCard = ({ room }) => {
         <h3 className="font-semibold text-gray-900 text-lg">{room.roomType}</h3>
         <div className="flex items-center mt-2 text-zinc-500 text-sm">
           <span className="font-semibold text-indigo-600 text-base">
-            {formatPrice(room.pricePerNight)}
+            {formatCurrencyVND(room.pricePerNight)}
           </span>
           <span className="ml-1">/ đêm</span>
         </div>
