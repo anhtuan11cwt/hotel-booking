@@ -1,10 +1,18 @@
 import { Upload } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 
 const AddRoom = () => {
-  const { hotelData } = useContext(AppContext);
+  const { axios, fetchOwnerHotels, hotelData } = useContext(AppContext);
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchOwnerHotels();
+  }, [fetchOwnerHotels]);
 
   const [roomData, setRoomData] = useState({
     amenities: [],
@@ -41,7 +49,7 @@ const AddRoom = () => {
     const value = e.target.value;
     setRoomData((prev) => ({
       ...prev,
-      amenities: value.split(",").map((item) => item.trim()),
+      amenities: value.split(","),
     }));
   };
 
@@ -58,17 +66,38 @@ const AddRoom = () => {
     formData.append("roomType", roomData.roomType);
     formData.append("pricePerNight", roomData.pricePerNight);
     formData.append("description", roomData.description);
-    formData.append("amenities", JSON.stringify(roomData.amenities));
+    formData.append(
+      "amenities",
+      JSON.stringify(roomData.amenities.map((item) => item.trim())),
+    );
     formData.append("isAvailable", roomData.isAvailable);
 
-    roomData.images.forEach((image) => {
-      if (image) {
-        formData.append("images", image);
+    for (let i = 0; i < roomData.images.length; i++) {
+      if (roomData.images[i]) {
+        formData.append("image", roomData.images[i]);
       }
-    });
+    }
 
-    console.log("Room Data Submitted:", Object.fromEntries(formData));
-    toast.success("Thêm phòng thành công! (Xem dữ liệu trong console)");
+    try {
+      setLoading(true);
+      const { data } = await axios.post("/api/room/add", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (data.success) {
+        toast.success(data.message || "Thêm phòng thành công!");
+        navigate("/owner/rooms");
+      } else {
+        toast.error(data.message || "Thêm phòng thất bại!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi thêm phòng:", error);
+      toast.error(error.response?.data?.message || "Lỗi khi thêm phòng!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -127,10 +156,18 @@ const AddRoom = () => {
             required
             value={roomData.hotel}
           >
-            <option value="">-- Chọn khách sạn --</option>
-            {hotelData.map((hotel) => (
-              <option key={hotel.id} value={hotel.id}>
-                {hotel.name}
+            <option key="placeholder-hotel" value="">
+              -- Chọn khách sạn --
+            </option>
+            {hotelData.map((hotel, index) => (
+              <option
+                key={
+                  (hotel._id ?? hotel.id) ||
+                  `${hotel.hotelName ?? hotel.name ?? "hotel"}-${index}`
+                }
+                value={hotel._id ?? hotel.id ?? ""}
+              >
+                {hotel.hotelName ?? hotel.name}
               </option>
             ))}
           </select>
@@ -193,7 +230,7 @@ const AddRoom = () => {
             id="amenities"
             name="amenities"
             onChange={handleAmenityChange}
-            placeholder="WiFi, TV, Minibar, Điều hòa,..."
+            placeholder="WiFi, Hồ bơi, Bãi đỗ xe, Phòng gym..."
             type="text"
             value={roomData.amenities.join(", ")}
           />
@@ -225,11 +262,12 @@ const AddRoom = () => {
         </div>
 
         <button
-          className="flex items-center gap-2 bg-[#3d5cfc] hover:bg-[#2f4df0] active:bg-[#2843d6] px-8 py-2.5 rounded focus:outline-none focus:ring-[#3d5cfc]/40 focus:ring-2 w-fit font-medium text-white"
+          className="flex items-center gap-2 bg-[#3d5cfc] hover:bg-[#2f4df0] active:bg-[#2843d6] px-8 py-2.5 rounded focus:outline-none focus:ring-[#3d5cfc]/40 focus:ring-2 w-fit font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading}
           type="submit"
         >
           <Upload aria-hidden="true" className="w-4 h-4" />
-          Thêm phòng
+          {loading ? "Đang thêm..." : "Thêm phòng"}
         </button>
       </form>
     </div>

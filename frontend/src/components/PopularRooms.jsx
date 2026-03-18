@@ -1,9 +1,13 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 import RoomCard from "./RoomCard";
 
 const PopularRooms = () => {
-  const { roomData } = useContext(AppContext);
+  const { fetchAllRooms, roomData } = useContext(AppContext);
+
+  useEffect(() => {
+    fetchAllRooms();
+  }, [fetchAllRooms]);
 
   return (
     <section className="px-4 py-16">

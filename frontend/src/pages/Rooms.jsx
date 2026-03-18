@@ -1,9 +1,13 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import RoomCard from "../components/RoomCard";
 import { AppContext } from "../context/AppContext";
 
 const Rooms = () => {
-  const { roomData } = useContext(AppContext);
+  const { fetchAllRooms, roomData } = useContext(AppContext);
+
+  useEffect(() => {
+    fetchAllRooms();
+  }, [fetchAllRooms]);
 
   return (
     <div className="rooms-page py-24 px-4">

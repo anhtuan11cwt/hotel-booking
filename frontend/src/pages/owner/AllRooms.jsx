@@ -1,19 +1,27 @@
 /* eslint-disable no-unused-vars */
 import { MapPin, Star, Trash2 } from "lucide-react";
 import { motion } from "motion/react";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import { formatCurrencyVND } from "../../utils/currency";
 
 const AllRooms = () => {
-  const { roomData, setRoomData } = useContext(AppContext);
+  const { deleteRoom, fetchOwnerRooms, roomData } = useContext(AppContext);
   const navigate = useNavigate();
 
-  const handleDelete = (roomId) => {
-    setRoomData(roomData.filter((room) => room._id !== roomId));
-    toast.success("Xóa phòng thành công!");
+  useEffect(() => {
+    fetchOwnerRooms();
+  }, [fetchOwnerRooms]);
+
+  const handleDelete = async (roomId) => {
+    const success = await deleteRoom(roomId);
+    if (success) {
+      toast.success("Xóa phòng thành công!");
+    } else {
+      toast.error("Xóa phòng thất bại!");
+    }
   };
 
   return (
@@ -78,10 +86,12 @@ const AllRooms = () => {
                       <img
                         alt={room.roomType}
                         className="shadow-md rounded-lg w-16 h-12 object-cover"
-                        src={room.images[0]}
+                        src={
+                          room.images[0] || "https://via.placeholder.com/100"
+                        }
                       />
                       <span className="font-medium text-gray-900 hover:text-orange-600 transition-colors duration-200 cursor-pointer">
-                        {room.hotel.name}
+                        {room.hotel?.name}
                       </span>
                     </div>
                   </td>
@@ -93,14 +103,14 @@ const AllRooms = () => {
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-2 text-gray-600">
                       <MapPin className="w-4 h-4 shrink-0" />
-                      <span className="text-sm">{room.hotel.address}</span>
+                      <span className="text-sm">{room.hotel?.address}</span>
                     </div>
                   </td>
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-1">
                       <Star className="fill-yellow-400 w-4 h-4 text-yellow-400" />
                       <span className="font-medium text-gray-900">
-                        {room.hotel.rating}
+                        {room.hotel?.rating}
                       </span>
                     </div>
                   </td>

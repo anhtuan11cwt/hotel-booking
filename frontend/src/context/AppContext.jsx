@@ -49,7 +49,7 @@ export const AppContextProvider = ({ children }) => {
         setHotelData(hotels);
       }
     } catch (error) {
-      console.error("Error fetching owner hotels:", error);
+      console.error("Lỗi khi lấy danh sách khách sạn của chủ:", error);
     }
   }, []);
 
@@ -70,7 +70,7 @@ export const AppContextProvider = ({ children }) => {
         setHotelData(hotels);
       }
     } catch (error) {
-      console.error("Error fetching all hotels:", error);
+      console.error("Lỗi khi lấy danh sách tất cả khách sạn:", error);
     }
   }, []);
 
@@ -83,7 +83,79 @@ export const AppContextProvider = ({ children }) => {
       }
       return false;
     } catch (error) {
-      console.error("Error deleting hotel:", error);
+      console.error("Lỗi khi xóa khách sạn:", error);
+      return false;
+    }
+  };
+
+  const fetchOwnerRooms = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/room/owner");
+      if (data.success) {
+        const rooms = data.rooms.map((room) => ({
+          _id: room._id,
+          amenities: room.amenities || [],
+          description: room.description,
+          hotel: {
+            _id: room.hotel?._id,
+            address: room.hotel?.hotelAddress,
+            amenities: room.hotel?.amenities || [],
+            contactNumber: room.hotel?.owner?.phone || "Chưa có",
+            name: room.hotel?.hotelName,
+            ownerName: room.hotel?.owner?.name || "Chưa có",
+            rating: room.hotel?.rating,
+          },
+          images: room.images || [],
+          isAvailable: room.isAvailable,
+          pricePerNight: room.pricePerNight,
+          roomType: room.roomType,
+        }));
+        setRoomData(rooms);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách phòng của chủ:", error);
+    }
+  }, []);
+
+  const fetchAllRooms = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/room/all");
+      if (data.success) {
+        const rooms = data.rooms.map((room) => ({
+          _id: room._id,
+          amenities: room.amenities || [],
+          description: room.description,
+          hotel: {
+            _id: room.hotel?._id,
+            address: room.hotel?.hotelAddress,
+            amenities: room.hotel?.amenities || [],
+            contactNumber: room.hotel?.owner?.phone || "Chưa có",
+            name: room.hotel?.hotelName,
+            ownerName: room.hotel?.owner?.name || "Chưa có",
+            rating: room.hotel?.rating,
+          },
+          images: room.images || [],
+          isAvailable: room.isAvailable,
+          pricePerNight: room.pricePerNight,
+          roomType: room.roomType,
+        }));
+        setRoomData(rooms);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách tất cả phòng:", error);
+    }
+  }, []);
+
+  const deleteRoom = async (roomId) => {
+    try {
+      const { data } = await axios.delete(`/api/room/delete/${roomId}`);
+      if (data.success) {
+        setRoomData((prev) => prev.filter((room) => room._id !== roomId));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Lỗi khi xóa phòng:", error);
       return false;
     }
   };
@@ -99,8 +171,11 @@ export const AppContextProvider = ({ children }) => {
     axios,
     checkUserLoggedIn,
     deleteHotel,
+    deleteRoom,
     fetchAllHotels,
+    fetchAllRooms,
     fetchOwnerHotels,
+    fetchOwnerRooms,
     hotelData,
     navigate,
     owner,
