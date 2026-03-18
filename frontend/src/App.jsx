@@ -4,6 +4,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 
 import Footer from "./components/Footer";
+import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
 import { AppContext } from "./context/AppContext";
 import About from "./pages/About";
@@ -75,6 +76,7 @@ function App() {
           <Route element={<Hotels />} path="/hotels" />
           <Route element={<SingleRoom />} path="/room/:id" />
           <Route element={<MyBookings />} path="/my-bookings" />
+          <Route element={<Loader />} path="/loader/:nextUrl" />
 
           <Route
             element={

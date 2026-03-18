@@ -293,7 +293,57 @@
 
 ---
 
-## 7. Ghi chú về model `Booking`
+## 7. Thanh toán qua Stripe
+
+- **Method**: POST
+- **URL**: `http://localhost:5000/api/bookings/stripe-payment`
+- **Authorization**:
+  - Yêu cầu đăng nhập (cookie JWT `token`)
+- **Mô tả**: Tạo một phiên thanh toán (Checkout Session) qua Stripe cho đơn đặt phòng. Sau khi tạo session thành công, trạng thái đơn hàng sẽ được cập nhật thành `confirmed` và `isPaid: true` (Lưu ý: Đây là logic tối giản, thực tế nên dùng Webhook để xác nhận thanh toán).
+- **Headers**:
+  - `Content-Type: application/json`
+- **Body** (JSON):
+  - `bookingId` (string, bắt buộc): ID của đơn đặt phòng.
+
+- **Ví dụ body**:
+
+```json
+{
+  "bookingId": "65f234567890abcdef123456"
+}
+```
+
+- **Response**:
+  - 200 (thành công): Trả về URL dẫn đến trang thanh toán của Stripe.
+
+```json
+{
+  "success": true,
+  "url": "https://checkout.stripe.com/c/pay/cs_test_..."
+}
+```
+
+- 404 (không tìm thấy đặt phòng):
+
+```json
+{
+  "message": "Không tìm thấy đặt phòng",
+  "success": false
+}
+```
+
+- 500 (lỗi server):
+
+```json
+{
+  "message": "...",
+  "success": false
+}
+```
+
+---
+
+## 8. Ghi chú về model `Booking`
 
 - **Nguồn**: `booking.model.js`
 - **Các trường chính**:
@@ -311,12 +361,13 @@
 
 ---
 
-## 8. Tóm tắt Routes
+## 9. Tóm tắt Routes
 
 | Method | Endpoint | Mô tả | Authorization |
 |--------|----------|-------|---------------|
 | POST | `/api/bookings/check-availability` | Kiểm tra phòng trống | Public |
 | POST | `/api/bookings/book` | Tạo đơn đặt phòng | Cần login |
+| POST | `/api/bookings/stripe-payment` | Thanh toán qua Stripe | Cần login |
 | GET | `/api/bookings/user` | Lấy lịch sử đặt phòng user | Cần login |
 | GET | `/api/bookings/hotel` | Lấy đơn đặt phòng của khách sạn | Cần login |
 | PUT | `/api/bookings/confirm/:id` | Xác nhận đặt phòng | Cần login |

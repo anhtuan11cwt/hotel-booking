@@ -6,6 +6,7 @@ import {
   confirmBooking,
   getHotelBooking,
   getUserBooking,
+  stripePayment,
 } from "../controllers/book.controller.js";
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
 
@@ -14,6 +15,8 @@ const bookingRouter = express.Router();
 bookingRouter.post("/check-availability", checkRoomAvailability);
 
 bookingRouter.post("/book", isAuthenticated, bookRoom);
+
+bookingRouter.post("/stripe-payment", isAuthenticated, stripePayment);
 
 bookingRouter.get("/user", isAuthenticated, getUserBooking);
 

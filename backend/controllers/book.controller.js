@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import transporter from "../config/nodemailer.js";
 import Booking from "../models/booking.model.js";
 import Hotel from "../models/hotel.model.js";
@@ -197,6 +198,63 @@ export const cancelBooking = async (req, res) => {
       booking,
       message: "Hủy đặt phòng thành công",
       success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+export const stripePayment = async (req, res) => {
+  try {
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+    if (!stripeSecretKey) {
+      return res.status(500).json({
+        message: "Thiếu cấu hình STRIPE_SECRET_KEY",
+        success: false,
+      });
+    }
+
+    const stripe = new Stripe(stripeSecretKey);
+    const { bookingId } = req.body;
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({
+        message: "Không tìm thấy đặt phòng",
+        success: false,
+      });
+    }
+
+    const roomData = await Room.findById(booking.room).populate("hotel");
+
+    const origin = req.headers.origin;
+
+    const session = await stripe.checkout.sessions.create({
+      cancel_url: `${origin}/`,
+      line_items: [
+        {
+          currency: "usd",
+          product_data: {
+            name: roomData.hotel.hotelName,
+          },
+          quantity: 1,
+          unit_amount: Math.round(booking.totalPrice * 100),
+        },
+      ],
+      mode: "payment",
+      success_url: `${origin}/loader/my-bookings`,
+    });
+
+    booking.isPaid = true;
+    booking.status = "confirmed";
+    await booking.save();
+
+    res.json({
+      success: true,
+      url: session.url,
     });
   } catch (error) {
     res.status(500).json({

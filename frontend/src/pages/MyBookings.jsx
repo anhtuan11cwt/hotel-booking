@@ -99,6 +99,19 @@ const MyBookings = () => {
     }
   };
 
+  const handlePayment = async (bookingId) => {
+    try {
+      const { data } = await axios.post("/api/bookings/stripe-payment", {
+        bookingId,
+      });
+      if (data.success) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Lỗi khi thanh toán");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -215,26 +228,25 @@ const MyBookings = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm text-gray-700">
                       <CreditCard className="w-4 h-4 text-gray-500 shrink-0" />
-                      <span className="truncate">
-                        {booking.paymentMethod || "Thanh toán tại khách sạn"}
-                      </span>
+                      <span className="truncate">Stripe</span>
                     </div>
                     <p className="font-semibold text-gray-900">
                       {formatCurrencyVND(booking.totalPrice)}
                     </p>
-                    <div className="flex items-center gap-1">
-                      {booking.isPaid ? (
-                        <span className="inline-flex items-center gap-1 text-green-600 text-xs font-medium">
-                          <CheckCircle className="w-3 h-3" />
-                          Đã thanh toán
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-red-600 text-xs font-medium">
-                          <XCircle className="w-3 h-3" />
-                          Chưa thanh toán
-                        </span>
-                      )}
-                    </div>
+                    {booking.isPaid ? (
+                      <span className="inline-flex items-center gap-1 text-green-600 text-xs font-medium">
+                        <CheckCircle className="w-3 h-3" />
+                        Paid
+                      </span>
+                    ) : (
+                      <button
+                        className="cursor-pointer px-3 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primary/90 transition-colors duration-150"
+                        onClick={() => handlePayment(booking._id)}
+                        type="button"
+                      >
+                        Pay Now
+                      </button>
+                    )}
                   </div>
                 </div>
 
