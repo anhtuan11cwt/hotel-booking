@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 
 const Login = () => {
-  const { setUser } = useContext(AppContext);
+  const { setUser, setOwner, axios } = useContext(AppContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -23,14 +23,26 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    console.log("Đã gửi form đăng nhập:", formData);
+    try {
+      const { data } = await axios.post("/api/user/login", formData);
 
-    setTimeout(() => {
-      setUser({ email: formData.email, name: "Người dùng" });
-      toast.success("Đăng nhập thành công!");
-      navigate("/");
+      if (data.success) {
+        toast.success(data.message);
+        if (data.user.role === "owner") {
+          setOwner(data.user);
+          navigate("/owner/dashboard");
+        } else {
+          setUser(data.user);
+          navigate("/");
+        }
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Đăng nhập thất bại");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (

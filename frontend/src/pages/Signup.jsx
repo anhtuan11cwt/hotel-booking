@@ -5,12 +5,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 
 const Signup = () => {
-  const { setUser } = useContext(AppContext);
+  const { axios } = useContext(AppContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     name: "",
     password: "",
+    role: "user",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -24,14 +25,20 @@ const Signup = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    console.log("Đã gửi form đăng ký:", formData);
+    try {
+      const { data } = await axios.post("/api/user/signup", formData);
 
-    setTimeout(() => {
-      setUser({ email: formData.email, name: formData.name });
-      toast.success("Đăng ký thành công!");
-      navigate("/");
+      if (data.success) {
+        toast.success(data.message);
+        navigate("/login");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Đăng ký thất bại");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -97,6 +104,18 @@ const Signup = () => {
                 <Eye className="w-5 h-5" />
               )}
             </button>
+          </div>
+
+          <div className="flex items-center w-full bg-white border border-gray-200 h-12 rounded-full overflow-hidden pl-4 gap-3 focus-within:border-[#FF6347] focus-within:ring-2 focus-within:ring-[#FF6347]/20 transition-all">
+            <select
+              className="flex-1 border-none outline-none ring-0 text-gray-700 bg-transparent cursor-pointer"
+              name="role"
+              onChange={handleChange}
+              value={formData.role}
+            >
+              <option value="user">Người dùng</option>
+              <option value="owner">Chủ khách sạn</option>
+            </select>
           </div>
         </div>
 

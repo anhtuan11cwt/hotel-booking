@@ -6,7 +6,8 @@ import { assets } from "../assets/assets";
 import { AppContext } from "../context/AppContext";
 
 const Navbar = () => {
-  const { user, setUser } = useContext(AppContext);
+  const { user, owner, setUser, setOwner, axios, navigate } =
+    useContext(AppContext);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -26,9 +27,16 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLogout = () => {
-    setUser(null);
+  const handleLogout = async () => {
+    try {
+      await axios.get("/api/user/logout");
+    } catch {
+      // Continue with logout even if API fails
+    }
+    setUser(false);
+    setOwner(false);
     setIsDropdownOpen(false);
+    navigate("/");
     toast.success("Đăng xuất thành công!");
   };
 
@@ -70,7 +78,7 @@ const Navbar = () => {
       </div>
 
       <div className="hidden md:flex items-center gap-4">
-        {user ? (
+        {user || owner ? (
           <div className="relative">
             <button
               className="flex items-center gap-2"
@@ -78,7 +86,7 @@ const Navbar = () => {
               type="button"
             >
               <img
-                alt={user.name || "Người dùng"}
+                alt={user?.name || owner?.name || "Người dùng"}
                 className={`w-9 h-9 rounded-full object-cover border-2 ${
                   isScrolled ? "border-[#FF6347]" : "border-white"
                 }`}
@@ -121,10 +129,10 @@ const Navbar = () => {
       </div>
 
       <div className="flex items-center gap-3 md:hidden">
-        {user && (
+        {(user || owner) && (
           <Link to="/my-bookings">
             <img
-              alt={user.name || "Người dùng"}
+              alt={user?.name || owner?.name || "Người dùng"}
               className="w-8 h-8 rounded-full object-cover"
               src={assets.profile_icon || assets.user_icon}
             />
@@ -167,7 +175,7 @@ const Navbar = () => {
           </Link>
         ))}
 
-        {user ? (
+        {user || owner ? (
           <button
             className="text-lg text-[#FF6347]"
             onClick={() => {
