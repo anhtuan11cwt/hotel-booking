@@ -48,7 +48,8 @@ export const checkRoomAvailability = async (req, res) => {
 export const bookRoom = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { roomId, hotelId, checkIn, checkOut, persons } = req.body;
+    const { roomId, hotelId, checkIn, checkOut, persons, paymentMethod } =
+      req.body;
 
     const isAvailable = await checkAvailability(roomId, checkIn, checkOut);
 
@@ -76,12 +77,15 @@ export const bookRoom = async (req, res) => {
 
     const totalPrice = room.pricePerNight * nights * persons;
 
+    const paymentMethodLabel =
+      paymentMethod === "stripe" ? "Stripe" : "Thanh toán tại khách sạn";
+
     const booking = await Booking.create({
       checkIn: checkInDate,
       checkOut: checkOutDate,
       hotel: hotelId,
       isPaid: false,
-      paymentMethod: "Pay at hotel",
+      paymentMethod: paymentMethodLabel,
       persons,
       room: roomId,
       status: "pending",
@@ -90,7 +94,12 @@ export const bookRoom = async (req, res) => {
     });
 
     const user = await User.findById(userId);
-    await sendBookingEmail(user, booking, room, room.hotel);
+
+    try {
+      await sendBookingEmail(user, booking, room, room.hotel);
+    } catch (emailError) {
+      console.error("Gửi email thất bại:", emailError.message);
+    }
 
     res.status(201).json({
       booking,
@@ -233,23 +242,26 @@ export const stripePayment = async (req, res) => {
     const origin = req.headers.origin;
 
     const session = await stripe.checkout.sessions.create({
-      cancel_url: `${origin}/`,
+      cancel_url: `${origin}/my-bookings`,
       line_items: [
         {
-          currency: "usd",
-          product_data: {
-            name: roomData.hotel.hotelName,
+          price_data: {
+            currency: "vnd",
+            product_data: {
+              name: `${roomData.hotel.hotelName} - ${roomData.roomType}`,
+            },
+            unit_amount: Math.round(booking.totalPrice),
           },
           quantity: 1,
-          unit_amount: Math.round(booking.totalPrice * 100),
         },
       ],
       mode: "payment",
-      success_url: `${origin}/loader/my-bookings`,
+      success_url: `${origin}/my-bookings?payment=success`,
     });
 
     booking.isPaid = true;
     booking.status = "confirmed";
+    booking.paymentMethod = "Stripe";
     await booking.save();
 
     res.json({

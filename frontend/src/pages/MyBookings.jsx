@@ -228,7 +228,11 @@ const MyBookings = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm text-gray-700">
                       <CreditCard className="w-4 h-4 text-gray-500 shrink-0" />
-                      <span className="truncate">Stripe</span>
+                      <span className="truncate">
+                        {booking.paymentMethod === "Stripe"
+                          ? "Thanh toán qua Stripe"
+                          : "Thanh toán tại khách sạn"}
+                      </span>
                     </div>
                     <p className="font-semibold text-gray-900">
                       {formatCurrencyVND(booking.totalPrice)}
@@ -236,15 +240,16 @@ const MyBookings = () => {
                     {booking.isPaid ? (
                       <span className="inline-flex items-center gap-1 text-green-600 text-xs font-medium">
                         <CheckCircle className="w-3 h-3" />
-                        Paid
+                        Đã thanh toán
                       </span>
                     ) : (
                       <button
-                        className="cursor-pointer px-3 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primary/90 transition-colors duration-150"
+                        className="cursor-pointer px-3 py-1.5 text-white text-xs font-medium rounded-lg hover:opacity-90 transition-colors duration-150"
                         onClick={() => handlePayment(booking._id)}
+                        style={{ backgroundColor: "var(--color-primary)" }}
                         type="button"
                       >
-                        Pay Now
+                        Thanh toán ngay
                       </button>
                     )}
                   </div>

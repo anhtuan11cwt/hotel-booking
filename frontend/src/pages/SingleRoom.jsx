@@ -1,6 +1,7 @@
 import {
   Calendar,
   CheckCircle,
+  CreditCard,
   MapPin,
   Phone,
   Star,
@@ -23,6 +24,7 @@ const SingleRoom = () => {
   const [bookingData, setBookingData] = useState({
     checkIn: "",
     checkOut: "",
+    paymentMethod: "pay-at-hotel",
     persons: 1,
   });
   const [isAvailable, setIsAvailable] = useState(false);
@@ -130,14 +132,32 @@ const SingleRoom = () => {
         checkIn: bookingData.checkIn,
         checkOut: bookingData.checkOut,
         hotelId: room.hotel._id,
+        paymentMethod: bookingData.paymentMethod,
         persons: bookingData.persons,
         roomId: id,
       });
 
       if (data.success) {
-        toast.success("Đặt phòng thành công!");
-        window.scrollTo(0, 0);
-        navigate("/my-bookings");
+        if (bookingData.paymentMethod === "stripe") {
+          try {
+            const paymentRes = await axios.post(
+              "/api/bookings/stripe-payment",
+              {
+                bookingId: data.booking._id,
+              },
+            );
+            if (paymentRes.data.success) {
+              window.location.href = paymentRes.data.url;
+            }
+          } catch {
+            toast.error("Lỗi thanh toán, vui lòng thử lại");
+            navigate("/my-bookings");
+          }
+        } else {
+          toast.success("Đặt phòng thành công!");
+          window.scrollTo(0, 0);
+          navigate("/my-bookings");
+        }
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Lỗi khi đặt phòng");
@@ -379,6 +399,31 @@ const SingleRoom = () => {
                     type="number"
                     value={bookingData.persons}
                   />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                  htmlFor="payment_method"
+                >
+                  Phương thức thanh toán
+                </label>
+                <div className="relative">
+                  <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <select
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none bg-white"
+                    id="payment_method"
+                    onChange={(e) =>
+                      onChangeHandler("paymentMethod", e.target.value)
+                    }
+                    value={bookingData.paymentMethod}
+                  >
+                    <option value="pay-at-hotel">
+                      Thanh toán tại khách sạn
+                    </option>
+                    <option value="stripe">Thanh toán qua Stripe</option>
+                  </select>
                 </div>
               </div>
 

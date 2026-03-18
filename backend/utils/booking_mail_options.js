@@ -12,8 +12,8 @@ const buildBookingMailOptions = (user, booking, room, hotel) => {
         
         <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <p><strong>Mã đơn hàng:</strong> ${booking._id}</p>
-          <p><strong>Khách sạn:</strong> ${hotel.name}</p>
-          <p><strong>Loại phòng:</strong> ${room.type}</p>
+          <p><strong>Khách sạn:</strong> ${hotel.hotelName}</p>
+          <p><strong>Loại phòng:</strong> ${room.roomType}</p>
           <p><strong>Ngày nhận phòng:</strong> ${checkInDate}</p>
           <p><strong>Ngày trả phòng:</strong> ${checkOutDate}</p>
           <p><strong>Số lượng người:</strong> ${booking.persons}</p>
