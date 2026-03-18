@@ -1,21 +1,40 @@
+import { useContext } from "react";
 import { Toaster } from "react-hot-toast";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import { AppContext } from "./context/AppContext";
 import About from "./pages/About";
 import Home from "./pages/Home";
 import Hotels from "./pages/Hotels";
 import Login from "./pages/Login";
 import MyBookings from "./pages/MyBookings";
+import AddRoom from "./pages/owner/AddRoom";
+import AllHotels from "./pages/owner/AllHotels";
+import AllRooms from "./pages/owner/AllRooms";
+import Bookings from "./pages/owner/Bookings";
+import OwnerLayout from "./pages/owner/OwnerLayout";
+import RegisterHotel from "./pages/owner/RegisterHotel";
 import Rooms from "./pages/Rooms";
 import Signup from "./pages/Signup";
 import SingleRoom from "./pages/SingleRoom";
 
+const OwnerRoute = ({ children }) => {
+  const { owner } = useContext(AppContext);
+  const isDev = import.meta.env.DEV;
+
+  if (!owner && !isDev) {
+    return <Navigate replace to="/login" />;
+  }
+
+  return children;
+};
+
 function App() {
   const location = useLocation();
-  const ownerPath = location.pathname.includes("owner");
+  const ownerPath = location.pathname.includes("/owner");
 
   return (
     <div className="min-h-screen">
@@ -56,6 +75,22 @@ function App() {
           <Route element={<Hotels />} path="/hotels" />
           <Route element={<SingleRoom />} path="/room/:id" />
           <Route element={<MyBookings />} path="/my-bookings" />
+
+          <Route
+            element={
+              <OwnerRoute>
+                <OwnerLayout />
+              </OwnerRoute>
+            }
+            path="/owner"
+          >
+            <Route element={<Navigate replace to="hotels" />} index />
+            <Route element={<RegisterHotel />} path="register-hotel" />
+            <Route element={<AllHotels />} path="hotels" />
+            <Route element={<AddRoom />} path="add-room" />
+            <Route element={<AllRooms />} path="rooms" />
+            <Route element={<Bookings />} path="bookings" />
+          </Route>
         </Routes>
       </main>
 
