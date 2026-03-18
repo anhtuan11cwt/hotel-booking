@@ -1,4 +1,24 @@
+import cloudinary from "../config/cloudinary.js";
 import Room from "../models/room.model.js";
+
+const extractPublicId = (url) => {
+  if (!url) return null;
+  const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.|%2E)/);
+  return match ? match[1] : null;
+};
+
+const deleteCloudinaryImage = async (imageUrl) => {
+  const publicId = extractPublicId(imageUrl);
+  if (publicId) {
+    await cloudinary.uploader.destroy(publicId);
+  }
+};
+
+const deleteCloudinaryImages = async (images) => {
+  for (const imageUrl of images) {
+    await deleteCloudinaryImage(imageUrl);
+  }
+};
 
 export const addRoom = async (req, res) => {
   try {
@@ -133,7 +153,7 @@ export const getRoomById = async (req, res) => {
 export const deleteRoom = async (req, res) => {
   try {
     const { id } = req.params;
-    const room = await Room.findByIdAndDelete(id);
+    const room = await Room.findById(id);
 
     if (!room) {
       return res.status(404).json({
@@ -141,6 +161,9 @@ export const deleteRoom = async (req, res) => {
         success: false,
       });
     }
+
+    await deleteCloudinaryImages(room.images);
+    await Room.findByIdAndDelete(id);
 
     return res.status(200).json({
       message: "Xóa phòng thành công",

@@ -1,4 +1,18 @@
+import cloudinary from "../config/cloudinary.js";
 import Hotel from "../models/hotel.model.js";
+
+const extractPublicId = (url) => {
+  if (!url) return null;
+  const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.|%2E)/);
+  return match ? match[1] : null;
+};
+
+const deleteCloudinaryImage = async (imageUrl) => {
+  const publicId = extractPublicId(imageUrl);
+  if (publicId) {
+    await cloudinary.uploader.destroy(publicId);
+  }
+};
 
 export const registerHotel = async (req, res) => {
   try {
@@ -80,7 +94,7 @@ export const getAllHotels = async (_req, res) => {
 export const deleteHotel = async (req, res) => {
   try {
     const { id } = req.params;
-    const hotel = await Hotel.findByIdAndDelete(id);
+    const hotel = await Hotel.findById(id);
 
     if (!hotel) {
       return res.status(404).json({
@@ -88,6 +102,9 @@ export const deleteHotel = async (req, res) => {
         success: false,
       });
     }
+
+    await deleteCloudinaryImage(hotel.image);
+    await Hotel.findByIdAndDelete(id);
 
     return res.status(200).json({
       message: "Xóa khách sạn thành công",
