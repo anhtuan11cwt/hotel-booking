@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import connectDB from "./config/connectDB.js";
+import userRoutes from "./routes/user.routes.js";
 
 dotenv.config();
 
@@ -21,6 +22,8 @@ app.use(cookieParser());
 app.get("/", (_req, res) => {
   res.send("Xin chào từ máy chủ");
 });
+
+app.use("/api/user", userRoutes);
 
 connectDB();
 
