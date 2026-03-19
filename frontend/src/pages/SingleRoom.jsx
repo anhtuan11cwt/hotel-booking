@@ -80,12 +80,16 @@ const SingleRoom = () => {
     }
 
     setCheckingAvailability(true);
+    const checkToastId = toast.loading("Đang kiểm tra phòng trống...");
+
     try {
       const { data } = await axios.post("/api/bookings/check-availability", {
         checkIn: bookingData.checkIn,
         checkOut: bookingData.checkOut,
         roomId: id,
       });
+
+      toast.dismiss(checkToastId);
 
       if (data.success) {
         setIsAvailable(data.isAvailable);
@@ -96,7 +100,14 @@ const SingleRoom = () => {
         }
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Lỗi kiểm tra phòng trống");
+      toast.dismiss(checkToastId);
+      if (error.code === "ECONNABORTED" || error.code === "ETIMEDOUT") {
+        toast.error("Server đang khởi động. Vui lòng thử lại sau 60 giây!");
+      } else {
+        toast.error(
+          error.response?.data?.message || "Lỗi kiểm tra phòng trống",
+        );
+      }
     } finally {
       setCheckingAvailability(false);
     }
@@ -127,15 +138,27 @@ const SingleRoom = () => {
     }
 
     setBookingLoading(true);
+    const toastId = toast.loading(
+      "Đang kết nối đến server... (có thể mất 30-60 giây nếu server đang khởi động)",
+    );
+
     try {
-      const { data } = await axios.post("/api/bookings/book", {
-        checkIn: bookingData.checkIn,
-        checkOut: bookingData.checkOut,
-        hotelId: room.hotel._id,
-        paymentMethod: bookingData.paymentMethod,
-        persons: bookingData.persons,
-        roomId: id,
-      });
+      const { data } = await axios.post(
+        "/api/bookings/book",
+        {
+          checkIn: bookingData.checkIn,
+          checkOut: bookingData.checkOut,
+          hotelId: room.hotel._id,
+          paymentMethod: bookingData.paymentMethod,
+          persons: bookingData.persons,
+          roomId: id,
+        },
+        {
+          timeout: 120000,
+        },
+      );
+
+      toast.dismiss(toastId);
 
       if (data.success) {
         if (bookingData.paymentMethod === "stripe") {
@@ -160,7 +183,12 @@ const SingleRoom = () => {
         }
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Lỗi khi đặt phòng");
+      toast.dismiss(toastId);
+      if (error.code === "ECONNABORTED" || error.code === "ETIMEDOUT") {
+        toast.error("Server đang khởi động. Vui lòng thử lại sau 60 giây!");
+      } else {
+        toast.error(error.response?.data?.message || "Lỗi khi đặt phòng");
+      }
       if (error.response?.data?.message === "Unauthorized") {
         navigate("/login");
       }
@@ -179,7 +207,7 @@ const SingleRoom = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex justify-center items-center min-h-screen">
         <p className="text-gray-500">Đang tải...</p>
       </div>
     );
@@ -187,21 +215,21 @@ const SingleRoom = () => {
 
   if (!room) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex justify-center items-center min-h-screen">
         <p className="text-gray-500">Không tìm thấy phòng</p>
       </div>
     );
   }
 
   return (
-    <div className="single-room-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col lg:flex-row gap-6">
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl single-room-page">
+      <div className="flex lg:flex-row flex-col gap-6 bg-white shadow-lg p-8 rounded-2xl">
         <div className="flex-1">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
+          <h1 className="mb-4 font-bold text-gray-800 text-4xl">
             {room.roomType}
           </h1>
 
-          <div className="flex items-center gap-2 text-gray-600 mb-3">
+          <div className="flex items-center gap-2 mb-3 text-gray-600">
             <MapPin className="w-5 h-5 shrink-0" />
             <span>{room.hotel.name}</span>
           </div>
@@ -211,7 +239,7 @@ const SingleRoom = () => {
           </div>
 
           <div className="flex items-center gap-2 mt-3">
-            <Star className="w-5 h-5 text-yellow-500 fill-current" />
+            <Star className="fill-current w-5 h-5 text-yellow-500" />
             <span className="font-medium text-gray-700">
               {room.hotel.rating}
             </span>
@@ -219,12 +247,12 @@ const SingleRoom = () => {
 
           <div className="mt-4">
             {isAvailable ? (
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+              <span className="inline-flex items-center gap-2 bg-green-100 px-4 py-2 rounded-full font-medium text-green-700 text-sm">
                 <CheckCircle className="w-4 h-4" />
                 Còn phòng
               </span>
             ) : (
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
+              <span className="inline-flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full font-medium text-gray-700 text-sm">
                 <XCircle className="w-4 h-4" />
                 Chưa kiểm tra
               </span>
@@ -232,19 +260,19 @@ const SingleRoom = () => {
           </div>
         </div>
 
-        <div className="lg:text-right flex flex-col gap-3">
-          <div className="text-3xl font-bold text-gray-800">
+        <div className="flex flex-col gap-3 lg:text-right">
+          <div className="font-bold text-gray-800 text-3xl">
             {formatCurrencyVND(room.pricePerNight)}
-            <span className="text-base font-normal text-gray-500"> / đêm</span>
+            <span className="font-normal text-gray-500 text-base"> / đêm</span>
           </div>
 
           <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2 text-gray-600 lg:justify-end">
+            <div className="flex lg:justify-end items-center gap-2 text-gray-600">
               <User className="w-4 h-4" />
               <span>{room.hotel.ownerName}</span>
             </div>
 
-            <div className="flex items-center gap-2 text-gray-600 lg:justify-end">
+            <div className="flex lg:justify-end items-center gap-2 text-gray-600">
               <Phone className="w-4 h-4" />
               <span>{room.hotel.contactNumber}</span>
             </div>
@@ -252,9 +280,9 @@ const SingleRoom = () => {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="gap-6 grid grid-cols-1 lg:grid-cols-3 mt-8">
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
             <img
               alt={`${room.roomType} - Hình ảnh ${selectedImage + 1}`}
               className="w-full h-96 object-cover"
@@ -262,7 +290,7 @@ const SingleRoom = () => {
             />
           </div>
 
-          <div className="flex gap-4 mt-4 overflow-x-auto pb-2">
+          <div className="flex gap-4 mt-4 pb-2 overflow-x-auto">
             {room.images.map((image, index) => (
               <button
                 className={`shrink-0 w-24 h-24 rounded-lg overflow-hidden transition-all duration-200 ${
@@ -283,18 +311,18 @@ const SingleRoom = () => {
             ))}
           </div>
 
-          <div className="mt-8 bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          <div className="bg-white shadow-lg mt-8 p-8 rounded-2xl">
+            <h2 className="mb-4 font-bold text-gray-800 text-2xl">
               Về phòng này
             </h2>
             <p className="text-gray-600 leading-relaxed">{room.description}</p>
           </div>
 
-          <div className="mt-8 bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          <div className="bg-white shadow-lg mt-8 p-8 rounded-2xl">
+            <h2 className="mb-6 font-bold text-gray-800 text-2xl">
               Tiện nghi phòng
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="gap-4 grid grid-cols-2 md:grid-cols-3">
               {room.amenities.map((amenity) => {
                 const IconComponent = getAmenityIcon(amenity);
                 return (
@@ -310,11 +338,11 @@ const SingleRoom = () => {
             </div>
           </div>
 
-          <div className="mt-8 bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          <div className="bg-white shadow-lg mt-8 p-8 rounded-2xl">
+            <h2 className="mb-6 font-bold text-gray-800 text-2xl">
               Tiện nghi khách sạn
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="gap-4 grid grid-cols-2 md:grid-cols-3">
               {room.hotel.amenities.map((amenity) => {
                 const IconComponent = getAmenityIcon(amenity);
                 return (
@@ -332,23 +360,23 @@ const SingleRoom = () => {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl shadow-lg p-8 sticky top-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          <div className="top-8 sticky bg-white shadow-lg p-8 rounded-2xl">
+            <h2 className="mb-6 font-bold text-gray-800 text-2xl">
               Đặt phòng ngay
             </h2>
 
             <div className="space-y-4">
               <div>
                 <label
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block mb-2 font-medium text-gray-700 text-sm"
                   htmlFor="check_in_date"
                 >
                   Ngày nhận phòng
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Calendar className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 -translate-y-1/2" />
                   <input
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    className="py-3 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 w-full"
                     id="check_in_date"
                     min={getTodayDate()}
                     onChange={(e) => onChangeHandler("checkIn", e.target.value)}
@@ -360,15 +388,15 @@ const SingleRoom = () => {
 
               <div>
                 <label
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block mb-2 font-medium text-gray-700 text-sm"
                   htmlFor="check_out_date"
                 >
                   Ngày trả phòng
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Calendar className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 -translate-y-1/2" />
                   <input
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    className="py-3 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 w-full"
                     id="check_out_date"
                     min={bookingData.checkIn || getTodayDate()}
                     onChange={(e) =>
@@ -382,15 +410,15 @@ const SingleRoom = () => {
 
               <div>
                 <label
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block mb-2 font-medium text-gray-700 text-sm"
                   htmlFor="guest_count"
                 >
                   Số lượng khách
                 </label>
                 <div className="relative">
-                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Users className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 -translate-y-1/2" />
                   <input
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    className="py-3 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 w-full"
                     id="guest_count"
                     max={room.maxGuests || 10}
                     min="1"
@@ -408,15 +436,15 @@ const SingleRoom = () => {
 
               <div>
                 <label
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block mb-2 font-medium text-gray-700 text-sm"
                   htmlFor="payment_method"
                 >
                   Phương thức thanh toán
                 </label>
                 <div className="relative">
-                  <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <CreditCard className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 -translate-y-1/2" />
                   <select
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none bg-white"
+                    className="bg-white py-3 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 w-full appearance-none"
                     id="payment_method"
                     onChange={(e) =>
                       onChangeHandler("paymentMethod", e.target.value)
@@ -431,7 +459,7 @@ const SingleRoom = () => {
                 </div>
               </div>
 
-              <div className="border-t pt-4 mt-6">
+              <div className="mt-6 pt-4 border-t">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-gray-600">Giá mỗi đêm</span>
                   <span className="font-semibold text-gray-800">
@@ -460,7 +488,7 @@ const SingleRoom = () => {
                 )}
                 {bookingData.checkIn && bookingData.checkOut && (
                   <div className="flex justify-between items-center pt-2 border-t">
-                    <span className="text-gray-800 font-medium">Tổng cộng</span>
+                    <span className="font-medium text-gray-800">Tổng cộng</span>
                     <span className="font-bold text-blue-600">
                       {formatCurrencyVND(calculateTotalPrice())}
                     </span>
@@ -473,18 +501,20 @@ const SingleRoom = () => {
                   isAvailable
                     ? "bg-green-600 text-white hover:bg-green-700 active:bg-green-800"
                     : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
-                }`}
+                } ${checkingAvailability || bookingLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                 disabled={checkingAvailability || bookingLoading}
                 onClick={
                   isAvailable ? onSubmitHandler : checkAvailabilityHandler
                 }
                 type="button"
               >
-                {checkingAvailability
-                  ? "Đang kiểm tra..."
-                  : isAvailable
-                    ? "Đặt ngay"
-                    : "Kiểm tra phòng trống"}
+                {bookingLoading
+                  ? "Đang xử lý đặt phòng..."
+                  : checkingAvailability
+                    ? "Đang kiểm tra..."
+                    : isAvailable
+                      ? "Đặt ngay"
+                      : "Kiểm tra phòng trống"}
               </button>
             </div>
           </div>
