@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { formatCurrencyVND } from "../utils/currency";
 
@@ -66,9 +67,11 @@ const getStatusIcon = (status) => {
 };
 
 const MyBookings = () => {
-  const { axios, user, navigate } = useContext(AppContext);
+  const { axios, user } = useContext(AppContext);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const fetchMyBookings = useCallback(async () => {
     try {
@@ -82,6 +85,29 @@ const MyBookings = () => {
       setLoading(false);
     }
   }, [axios]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const paymentStatus = params.get("payment");
+    const bookingId = params.get("bookingId");
+
+    if (paymentStatus === "success" && bookingId) {
+      axios
+        .get(`/api/bookings/verify-payment?bookingId=${bookingId}`)
+        .then((res) => {
+          if (res.data.success) {
+            toast.success("Thanh toán thành công!");
+            fetchMyBookings();
+          }
+        })
+        .catch((err) => {
+          console.error("Lỗi xác minh thanh toán:", err);
+        })
+        .finally(() => {
+          navigate(location.pathname, { replace: true });
+        });
+    }
+  }, [location, axios, navigate, fetchMyBookings]);
 
   useEffect(() => {
     fetchMyBookings();

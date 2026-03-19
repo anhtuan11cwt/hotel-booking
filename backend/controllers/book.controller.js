@@ -255,18 +255,59 @@ export const stripePayment = async (req, res) => {
           quantity: 1,
         },
       ],
+      metadata: {
+        bookingId: bookingId,
+      },
       mode: "payment",
-      success_url: `${origin}/my-bookings?payment=success`,
+      success_url: `${origin}/my-bookings?payment=success&bookingId=${bookingId}`,
     });
-
-    booking.isPaid = true;
-    booking.status = "confirmed";
-    booking.paymentMethod = "Stripe";
-    await booking.save();
 
     res.json({
       success: true,
       url: session.url,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+export const verifyPayment = async (req, res) => {
+  try {
+    const { bookingId } = req.query;
+
+    if (!bookingId) {
+      return res.status(400).json({
+        message: "Thiếu bookingId",
+        success: false,
+      });
+    }
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({
+        message: "Không tìm thấy đặt phòng",
+        success: false,
+      });
+    }
+
+    if (booking.isPaid) {
+      return res.json({
+        message: "Thanh toán đã được xác nhận",
+        success: true,
+      });
+    }
+
+    booking.isPaid = true;
+    booking.paymentMethod = "Stripe";
+    booking.status = "confirmed";
+    await booking.save();
+
+    res.json({
+      message: "Thanh toán thành công",
+      success: true,
     });
   } catch (error) {
     res.status(500).json({
