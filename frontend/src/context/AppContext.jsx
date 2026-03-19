@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { hotelsData, roomsData } from "../assets/assets";
 import { AppContext } from "./AppContext.js";
 
 axios.defaults.withCredentials = true;
@@ -10,8 +9,8 @@ axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 export const AppContextProvider = ({ children }) => {
   const [user, setUser] = useState(false);
   const [owner, setOwner] = useState(false);
-  const [hotelData, setHotelData] = useState(hotelsData);
-  const [roomData, setRoomData] = useState(roomsData);
+  const [hotelData, setHotelData] = useState([]);
+  const [roomData, setRoomData] = useState([]);
 
   const navigate = useNavigate();
 
