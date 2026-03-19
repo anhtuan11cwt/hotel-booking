@@ -290,16 +290,17 @@ const MyBookings = () => {
                     {getStatusIcon(booking.status)}
                     <span>{getStatusLabel(booking.status)}</span>
                   </div>
-                  {booking.status !== "cancelled" && (
-                    <button
-                      aria-label="Hủy đặt phòng"
-                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-150 cursor-pointer"
-                      onClick={() => handleCancelBooking(booking._id)}
-                      type="button"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
+                  {booking.status !== "cancelled" &&
+                    new Date(booking.checkIn) >= new Date() && (
+                      <button
+                        aria-label="Hủy đặt phòng"
+                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-150 cursor-pointer"
+                        onClick={() => handleCancelBooking(booking._id)}
+                        type="button"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                 </div>
               </div>
             ))}

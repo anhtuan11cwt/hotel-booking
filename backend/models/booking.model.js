@@ -21,6 +21,7 @@ const bookingSchema = new mongoose.Schema(
     },
     paymentMethod: {
       default: "Pay at hotel",
+      enum: ["Stripe", "Pay at hotel"],
       type: String,
     },
     persons: {

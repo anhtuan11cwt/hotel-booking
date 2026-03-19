@@ -190,11 +190,7 @@ export const cancelBooking = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const booking = await Booking.findByIdAndUpdate(
-      id,
-      { status: "cancelled" },
-      { returnDocument: "after" },
-    );
+    const booking = await Booking.findById(id);
 
     if (!booking) {
       return res.status(404).json({
@@ -202,6 +198,16 @@ export const cancelBooking = async (req, res) => {
         success: false,
       });
     }
+
+    if (new Date(booking.checkIn) < new Date()) {
+      return res.status(400).json({
+        message: "Không thể hủy đặt phòng đã qua ngày check-in",
+        success: false,
+      });
+    }
+
+    booking.status = "cancelled";
+    await booking.save();
 
     res.json({
       booking,
